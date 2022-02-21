@@ -1,0 +1,3 @@
+3DX_CUI_Supplier: CUI, Inc
+3DX_CUI_Description: 15 Vdc, 0.067 A, 1 W, 4.5 ~ 5.5 Vdc Input Range
+3DX_CUI_Model Number: PESE1-S5-S15-M
