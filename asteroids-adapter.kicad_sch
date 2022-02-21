@@ -7,7 +7,7 @@
   (title_block
     (title "Asteroids to Asteroids Deluxe adapter")
     (date "2022-02-21")
-    (rev "1.0")
+    (rev "1.1")
   )
 
   (lib_symbols
@@ -3197,11 +3197,11 @@
   )
 
   (symbol (lib_id "ast-adapter:CUI  PDM1-S5-D15-S") (at 151.765 34.925 0) (unit 1)
-    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (in_bom yes) (on_board yes)
     (uuid fafdd477-a3b3-411d-9d57-1c296ebf1344)
     (property "Reference" "VR1" (id 0) (at 151.765 21.59 0))
-    (property "Value" "CUI  PDM1-S5-D15-S" (id 1) (at 126.365 140.843 0)
-      (effects (font (size 1.27 1.27)) (justify left) hide)
+    (property "Value" "CUI  PDM1-S5-D15-S" (id 1) (at 140.335 44.45 0)
+      (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "asteroids-adapter:CONV_PDM1-S5-D15-S" (id 2) (at 141.224 49.022 0)
       (effects (font (size 1.27 1.27)) hide)
