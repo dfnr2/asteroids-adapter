@@ -7,8 +7,8 @@
   (paper "USLetter")
   (title_block
     (title "Asteroids to Asteroids Deluxe Adapter")
-    (date "2022-02-22")
-    (rev "1.2")
+    (date "2022-02-24")
+    (rev "1.3")
   )
 
   (layers
@@ -1307,7 +1307,7 @@
   (gr_text "A" (at 185.42 53.975) (layer "F.SilkS") (tstamp 0967f77b-2290-41f1-b8c2-9a0c7d3af11a)
     (effects (font (size 1.905 1.905) (thickness 0.3)) (justify mirror))
   )
-  (gr_text "Asteroids <-> Ast Deluxe Cabinet Adapter rev 1.2" (at 150.5204 62.5856) (layer "F.SilkS") (tstamp 0a65f57e-b91d-4ac8-8e83-d116f74e24d2)
+  (gr_text "Asteroids <-> Ast Deluxe Cabinet Adapter rev 1.3" (at 150.5204 62.5856) (layer "F.SilkS") (tstamp 0a65f57e-b91d-4ac8-8e83-d116f74e24d2)
     (effects (font (size 1.524 1.524) (thickness 0.3)))
   )
   (gr_text "(PCB)" (at 126.365 57.785) (layer "F.SilkS") (tstamp 1dd7e11e-43e2-490d-b80a-72ae7a1e8bc8)
