@@ -7,8 +7,8 @@
   (paper "USLetter")
   (title_block
     (title "Asteroids to Asteroids Deluxe Adapter")
-    (date "2022-03-08")
-    (rev "1.4")
+    (date "2022-03-09")
+    (rev "1.5")
   )
 
   (layers
@@ -1326,11 +1326,13 @@
     )
   )
 
-  (gr_line (start 145.2372 67.3862) (end 145.2372 81.3562) (layer "F.SilkS") (width 0.2) (tstamp 26e47b96-e9a5-48fa-bb2f-09aeb167fcf1))
-  (gr_line (start 120.7516 76.699532) (end 163.322 76.699532) (layer "F.SilkS") (width 0.2) (tstamp 644be4a6-1e55-414d-a68c-a545e48e63e7))
-  (gr_line (start 127.889 67.31) (end 127.889 81.28) (layer "F.SilkS") (width 0.2) (tstamp 90662c63-00a8-414d-b291-156d808a5167))
-  (gr_line (start 120.7516 72.042866) (end 163.322 72.042866) (layer "F.SilkS") (width 0.2) (tstamp d71882e2-ac98-42c6-8f8a-dd4c82632084))
-  (gr_rect (start 120.7516 67.3862) (end 163.322 81.3562) (layer "F.SilkS") (width 0.254) (fill none) (tstamp e79214a2-52a4-44d6-8e2b-47ef01e1d5a4))
+  (gr_line (start 154.9527 66.4464) (end 154.9527 85.0646) (layer "F.SilkS") (width 0.2) (tstamp 26e47b96-e9a5-48fa-bb2f-09aeb167fcf1))
+  (gr_rect (start 121.158 78.7146) (end 126.4158 72.9996) (layer "F.SilkS") (width 0.2) (fill solid) (tstamp 35b0aa54-b7ab-4dce-b263-08a43437121f))
+  (gr_line (start 120.8405 78.994) (end 162.1917 78.994) (layer "F.SilkS") (width 0.2) (tstamp 644be4a6-1e55-414d-a68c-a545e48e63e7))
+  (gr_line (start 147.4343 66.4464) (end 147.4343 85.0646) (layer "F.SilkS") (width 0.2) (tstamp 90662c63-00a8-414d-b291-156d808a5167))
+  (gr_line (start 120.8405 72.644) (end 162.1917 72.644) (layer "F.SilkS") (width 0.2) (tstamp d71882e2-ac98-42c6-8f8a-dd4c82632084))
+  (gr_rect (start 121.158 84.7598) (end 126.4666 79.2734) (layer "F.SilkS") (width 0.2) (fill solid) (tstamp e6125ca4-8c3c-48b2-807d-2c2fe81d8bc7))
+  (gr_rect (start 120.8405 66.4464) (end 162.1917 85.0646) (layer "F.SilkS") (width 0.254) (fill none) (tstamp e79214a2-52a4-44d6-8e2b-47ef01e1d5a4))
   (gr_poly
     (pts
       (xy 107.188 142.6718)
@@ -1372,7 +1374,7 @@
   (gr_text "A" (at 165.608 53.975) (layer "F.SilkS") (tstamp 0967f77b-2290-41f1-b8c2-9a0c7d3af11a)
     (effects (font (size 1.905 1.905) (thickness 0.3)) (justify mirror))
   )
-  (gr_text "Asteroids <-> Ast Dlx Adapter rev 1.4" (at 141.6812 62.1792) (layer "F.SilkS") (tstamp 0a65f57e-b91d-4ac8-8e83-d116f74e24d2)
+  (gr_text "Asteroids <-> Ast Dlx Adapter rev 1.5\n" (at 141.6812 62.1792) (layer "F.SilkS") (tstamp 0a65f57e-b91d-4ac8-8e83-d116f74e24d2)
     (effects (font (size 1.524 1.524) (thickness 0.3)))
   )
   (gr_text "(PCB)" (at 128.2192 57.716) (layer "F.SilkS") (tstamp 1dd7e11e-43e2-490d-b80a-72ae7a1e8bc8)
@@ -1387,8 +1389,8 @@
   (gr_text "A" (at 118.11 53.975) (layer "F.SilkS") (tstamp a250c16a-b6aa-4852-bedd-972cbf617367)
     (effects (font (size 1.905 1.905) (thickness 0.3)) (justify mirror))
   )
-  (gr_text "Use: Ast PCB->Dlx Dlx PCB->Ast\n\nR1   1K             10K\n \nR2   10K            1K" (at 122.3264 74.2442) (layer "F.SilkS") (tstamp eacccbd5-168c-4a45-b441-88af3d877755)
-    (effects (font (size 1.5 1.5) (thickness 0.3)) (justify left))
+  (gr_text "Configuration   R1    R2\n\nAst PCB->Dlx  1K   10K\n\nDlx PCB->Ast  10K   1K" (at 126.5809 75.4888) (layer "F.SilkS") (tstamp eacccbd5-168c-4a45-b441-88af3d877755)
+    (effects (font (size 2.032 1.778) (thickness 0.3048)) (justify left))
   )
 
   (segment (start 148.336 108.458) (end 138.43 108.458) (width 0.508) (layer "F.Cu") (net 1) (tstamp 5491ad77-583f-4734-8776-ccaa81053342))
@@ -6257,12 +6259,14 @@
       )
     )
   )
-  (group "" (id 119bed15-d87d-4a81-bafe-b71226471a26)
+  (group "" (id 783ddcea-5963-4365-9c5b-b3f14c41286e)
     (members
       26e47b96-e9a5-48fa-bb2f-09aeb167fcf1
+      35b0aa54-b7ab-4dce-b263-08a43437121f
       644be4a6-1e55-414d-a68c-a545e48e63e7
       90662c63-00a8-414d-b291-156d808a5167
       d71882e2-ac98-42c6-8f8a-dd4c82632084
+      e6125ca4-8c3c-48b2-807d-2c2fe81d8bc7
       e79214a2-52a4-44d6-8e2b-47ef01e1d5a4
       eacccbd5-168c-4a45-b441-88af3d877755
     )

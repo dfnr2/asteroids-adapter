@@ -6,8 +6,8 @@
 
   (title_block
     (title "Asteroids to Asteroids Deluxe adapter")
-    (date "2022-03-08")
-    (rev "1.4")
+    (date "2022-03-09")
+    (rev "1.5")
   )
 
   (lib_symbols
