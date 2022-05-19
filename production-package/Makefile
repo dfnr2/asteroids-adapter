@@ -15,9 +15,14 @@ PRJNAME=$(NAME)-Rev_$(PRJREV)$(BOARDREVMINOR)
 PCBZIPFILE=$(PCBNAME)-pcbfab.zip
 PKGZIPFILE=$(PRJNAME)-package.zip
 BOMFILE=BOM-$(PRJNAME)-$(VARIANTNAME).csv
-READMEFILETXT=README-$(PRJNAME).txt
-READMEFILEPDF=README-$(PRJNAME).pdf
-READMEFILE=$(REDMEFILEPDF)
+
+#README_STYLE=rst
+README_STYLE=pdf
+
+READMEFILEBASE=README-$(PRJNAME)
+READMEFILETXT=$(READMEFILEBASE).rst
+READMEFILEPDF=$(READMEFILEBASE).pdf
+READMETARGET=readme$(READMESTYLE)
 
 RENDERFILE_TOP=Renderings-top-$(PRJNAME)-$(VARIANTNAME).jpg
 RENDERFILE_BOTTOM=Renderings-bottom-$(PRJNAME)-$(VARIANTNAME).jpg
@@ -29,7 +34,6 @@ DUMMY_STEPFILE="$(STEPFILE)_"
 DUMMY_TARGETS=$(DUMMY_STEPFILE) $(DUMMY_RENDERFILES)
 GENERATED_BOMFILE = ../$(NAME)_bom_$(PCBREV).csv
 
-READMEFILE=$(READMEFILETXT)
 
 
 define README_TEXT
@@ -160,7 +164,7 @@ endef
 # selected and edited (by removing the trailing "_") to help ensure that the
 
 .PHONY: all
-all: dummies bomfile renderfiles schemfile readme \
+all: dummies bomfile renderfiles schemfile $(READMETARGET) \
 	$(BOMFILE) $(RENDERFILES) $(SCHEMFILE) zip
 
 .PHONY: dummies
@@ -224,8 +228,6 @@ renderfile_bottom:
   fi
 
 renderfiles: renderfile_top renderfile_bottom
-
-readme: $(READMEFILE)
 
 readmetxt: $(READMEFILETXT)
 

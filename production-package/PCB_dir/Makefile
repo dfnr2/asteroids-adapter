@@ -5,9 +5,13 @@ BASENAME=$(BARENAME)-Rev_$(REV)
 VARIANT=
 NAME=$(BASENAME)$(VARIANT)
 
-READMEFILETXT=README-PCB-$(BASENAME).rst
-READMEFILEPDF=README-PCB-$(BASENAME).pdf
-READMEFILE=$(REDMEFILETXT)
+#README_STYLE=rst
+README_STYLE=pdf
+
+READMEFILEBASE=README-PCB-$(NAME)
+READMEFILETXT=$(READMEFILEBASE).rst
+READMEFILEPDF=$(READMEFILEBASE).pdf
+READMETARGET=readme$(README_STYLE)
 
 SMT=true
 LAYERS=2
@@ -69,13 +73,11 @@ GND1_README =
 GND2_README =
 endif
 
-
 OUTPUT_EXTS = $(addprefix *., $(TOP_SOLDER_EXT) $(TOP_COPPER_EXT) $(TOP_SILK_EXT) \
                $(BOT_SOLDER_EXT) $(BOT_COPPER_EXT) $(BOT_SILK_EXT) \
 			   $(OUTLN_EXT) $(DRILL_EXT)) \
 			   $(TOP_PASTE_EXT) $(BOT_PASTE_EXT) \
 			   $(GND1_EXT) $(GND2_EXT)
-
 
 DRILDIR = outputs
 GERBDIR = outputs
@@ -190,9 +192,7 @@ define GBR_FAIL
 endef
 
 
-all: dummies copy renderfiles readme readmetex
-
-readme: $(READMEFILE)
+all: dummies copy renderfiles $(READMETARGET)
 
 readmetxt: $(READMEFILETXT)
 
@@ -232,7 +232,6 @@ renderfile_bottom:
 
 renderfiles: renderfile_top renderfile_bottom
 
-
 clean:
 	rm -f $(OUTPUT_EXTS)
 veryclean:
@@ -252,8 +251,6 @@ gvp: gvp_template.gvp
 jpg: $(NAME).png
 	for i in *.png; do echo $$i '->' $${i%%png}jpg; convert $$i $${i%%png}jpg; done
 
-
-
 copy:
 	cp $(DRILDIR)/$(BARENAME)-PTH.$(DRILL_EXT) ./$(NAME)-PTH.$(DRILL_EXT) || echo "$(DRILL_FAIL)"|tr '|' '\n'
 	cp $(DRILDIR)/$(BARENAME)-NPTH.$(DRILL_EXT) ./$(NAME)-NPTH.$(DRILL_EXT) || echo "$(DRILL_FAIL)"|tr '|' '\n'
@@ -271,7 +268,6 @@ copy:
 #	cp $(GERBDIR)/$(BARENAME)-$(PWR2_DSC).$(PWR2_EXT) ./$(NAME)_$(PWR2_DSC).$(PWR2_EXT)
 #	cp $(GERBDIR)/$(BARENAME)-$(BOT_PASTE_DSC).$(BOT_PASTE_EXT) ./$(NAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT)
 #	cp $(GERBDIR)/$(BARENAME)-$(BOT_SILK_DSC).$(BOT_SILK_EXT) ./$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)
-
 
 gerbv:
 	gerbv \
@@ -291,7 +287,6 @@ gerbv:
 #	$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT) \
 #	$(NAME)_$(PWR1_DSC).$(PWR1_EXT) \
 #	$(NAME)_$(PWR2_DSC).$(PWR2_EXT) \
-
 
 zip: all
 	rm -f $(ZIPFILE)
