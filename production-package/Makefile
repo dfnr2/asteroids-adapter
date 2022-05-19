@@ -1,5 +1,6 @@
-VARIANTNAME=Production
 NAME=asteroids-adapter
+PROJECT_DESC="Asteroids PCB CABINET ADAPTER"
+VARIANTNAME=Production
 BOARDREV=2
 BOARDREVMINOR=
 SCHEMATIC_REV=0
@@ -7,7 +8,6 @@ PROJECT_REV=0
 PCBREV=0$(BOARDREV)
 SCHREV=$(BOARDREV).$(SCHEMATIC_REV)
 PRJREV=$(BOARDREV).$(SCHEMATIC_REV).$(PROJECT_REV)
-
 PCBNAME=$(NAME)-Rev_$(PCBREV)$(BOARDREVMINOR)
 SCHNAME=$(NAME)-Rev_$(SCHREV)
 PRJNAME=$(NAME)-Rev_$(PRJREV)$(BOARDREVMINOR)
@@ -15,102 +15,143 @@ PRJNAME=$(NAME)-Rev_$(PRJREV)$(BOARDREVMINOR)
 PCBZIPFILE=$(PCBNAME)-pcbfab.zip
 PKGZIPFILE=$(PRJNAME)-package.zip
 BOMFILE=BOM-$(PRJNAME)-$(VARIANTNAME).csv
-READMEFILE=README-$(PRJNAME).txt
+READMEFILETXT=README-$(PRJNAME).txt
+READMEFILEPDF=README-$(PRJNAME).pdf
+READMEFILE=$(REDMEFILEPDF)
+
 RENDERFILE_TOP=Renderings-top-$(PRJNAME)-$(VARIANTNAME).jpg
 RENDERFILE_BOTTOM=Renderings-bottom-$(PRJNAME)-$(VARIANTNAME).jpg
 RENDERFILES=$(RENDERFILE_TOP) $(RENDERFILE_BOTTOM)
 DUMMY_RENDERFILES=$(RENDERFILE_TOP)_ $(RENDERFILE_BOTTOM)_
 GENERATED_SCHEMFILE=../$(NAME).pdf
-SCHEMFILE=Schematic-$(SCHNAME).pdf
 STEPFILE=Model-3D-$(PCBNAME)-$(VARIANTNAME).step
-DUMMY_STEPFILE=Model-3D-$(PCBNAME)-$(VARIANTNAME).step_
+DUMMY_STEPFILE="$(STEPFILE)_"
 DUMMY_TARGETS=$(DUMMY_STEPFILE) $(DUMMY_RENDERFILES)
 GENERATED_BOMFILE = ../$(NAME)_bom_$(PCBREV).csv
 
+READMEFILE=$(READMEFILETXT)
 
 
 define README_TEXT
-This is the package for \"$(NAME)\" rev $(PRJREV).||\
-Service Requested:||\
-2 layer PCB as specified in the README file in the PCB ZIP file:|\
-•  PCB and assembly to IPC class 3 standards|\
-•  0.62\" FR4, 94V-0 marked|\
-•  2 layer stackup to be approved prior to manufacture|\
-•  ENIG finish, RoHS compliant||\
-Standards: RoHS compliant||\
-Programming and labeling of microcontroller:|\
-•  None||\
-Tracking:|\
-•  None||\
-Testing: 100% testing|\
-•  Standard PCB testing||\
-Packaging:|\
-•  Standard Packaging||\
-Production Package:||\
-The  ZIP file contains the following files:||\
-•  asteroids-adapter-pcbfab.zip – A ZIP file containing Gerbers; drill file;|\
-    readme file containing PCB fabrication directions; fab renderings, etc.||\
-$(READMEFILE): This letter.||\
-Renderings-asteroids-adapter-top-Rev_2.0.0-Production.jpg: A JPEG file containing a reference for PCB parts placement, and 3D renderings of the front of the populated board (with components).||\
-Renderings-asteroids-adapter-bottom-Rev_2.0.0-Production.jpg: A JPEG file containing a reference for PCB parts placement, and 3D renderings of the back of the populated board (with components).||\
-Model-3D-asteroids-adapter_Rev_2.step: An exported 3D STEP file of the PCB with all components fitted.||\
-Schematic-asteroids-adapter-Rev_2.0.pdf: A PDF file containing the schematics for this PCB.||\
-BOM-asteroids-adapter-Rev_2.0.0-Production.csv: BOM file, csv format||\
-Subdirectory: labels_dir|\
-•  asteroids-adapter-Rev_2_labels.doc: Labels for final packaging.||\
-Subdirectory: programming_files_dir: empty, not applicable.|\
-•  Subdirectory containing programming files (not applicable)||\
-Subdirectory: diagrams_dir:  empty|\
-•  Subdirectory containing diagrams or pictures related to production||\
-Subdirectory: work_instructions_dir/: (to be completed in the future)|\
-•  Subdirectory containing work instructions, test procedures, etc.
+$(PROJECT_DESC)\
+|-----------------------------------------------------------------------------------|\
+|This is the package for $(NAME) rev $(PRJREV).|\
+|Service Requested\
+|=================|\
+|   * PCB and assembly to IPC class 3 standards\
+|   * 0.62 inch FR4, 94V-0 marked\
+|   * 2 layer stackup to be approved prior to manufacture\
+|   * ENIG finish, RoHS compliant|\
+|Standards\
+|=========|\
+|RoHS compliant\
+||Programming and labeling of microcontroller\
+|===========================================|\
+|None\
+||Testing\
+|=======\
+|   * Test 100% testing of assemblies\
+|   * Standard PCB QA (bed of nails, test for shorts and opens)\
+|\
+||Tracking\
+|========|\
+|None\
+|\
+||Packaging\
+|=========|\
+|Standard Packaging\
+||Production Package\
+|==================|\
+|The  ZIP file contains the following files:\
+|   $(PCBZIPFILE)\
+|+++A ZIP file containing Gerbers; drill file;\
+|+++readme.txt\
+|++++++readme file containing PCB fabrication directions; fab renderings, etc.\
+|\
+|$(READMEFILE)\
+|+++This letter.\
+|\
+|$(RENDERFILE_TOP)\
+|+++A JPEG file containing a reference for PCB parts placement, and 3D renderings of the front of the populated board (with components).\
+|.. image:: ./$(RENDERFILE_TOP)\
+|\
+|$(RENDERFILE_BOTTOM)\
+|+++A JPEG file containing a reference for PCB parts placement, and 3D renderings of the back of the populated board (with components).\
+|.. image:: ./$(RENDERFILE_BOTTOM)\
+|\
+|$(STEPFILE):\
+|+++An exported 3D STEP file of the PCB with all components fitted.\
+|\
+|$(SCHEMFILE)\
+|+++A PDF file containing the schematics for this PCB.\
+|\
+|$(BOMFILE)\
+|+++BOM file, csv format\
+|\
+|Subdirectory: labels_dir\
+|+++:$(PROJNAME)_labels.doc: Labels for final packaging.\
+|\
+|Subdirectory: programming_files_dir\
+|+++empty, not applicable.\
+|\
+|Subdirectory containing programming files\
+|+++empty, not applicable\
+|\
+|Subdirectory: diagrams_dir\
+|+++empty\
+|\
+|Subdirectory containing diagrams or pictures related to production\
+|+++empty\
+|\
+|Subdirectory: work_instructions_dir\
+|+++Subdirectory containing work instructions, test procedures, etc.|
 endef
 
 
 define RENDER_TOP_MSG
-The assembly rendering \"$(RENDERFILE_TOP)\"|\
-must be manually generated with the following steps:||\
-1) Bring up the 3D rendering from PCBNEW \(ALT-3\).  Select|\
-the TOP view \(RightClick-"View Top"\).||\
-2) Perform a screen capture.  Save the capture to the|\
-production-package directory.  Select the dummy file name||\
-"    \"$(RENDERFILE_TOP)_\""||\
-and delete the trailing \"_\".  Then click Save.
+|The assembly rendering \"$(RENDERFILE_TOP)\"\
+|must be manually generated with the following steps:\
+|1) Bring up the 3D rendering from PCBNEW \(ALT-3\).  Select\
+|the TOP view \(RightClick-"View Top"\).\
+|2) Perform a screen capture.  Save the capture to the\
+|production-package directory.  Select the dummy file name\
+|"    \"$(RENDERFILE_TOP)_\""\
+|and delete the trailing \"_\".  Then click Save.
 endef
 
 define RENDER_BOTTOM_MSG
-The assembly rendering \"$(RENDERFILE_BOTTOM)\"|\
-must be manually generated with the following steps:||\
-1) Bring up the 3D rendering from PCBNEW \(ALT-3\).  Select|\
-the BOTTOM view \(RightClick-"View Bottom"\).||\
-2) Perform a screen capture.  Save the capture to the|\
-production-package directory.  Select the dummy file name||\
-"    \"$(RENDERFILE_BOTTOM)_\""||\
-and delete the trailing \"_\".  Then click Save.
+|The assembly rendering \"$(RENDERFILE_BOTTOM)\"\
+|must be manually generated with the following steps:\
+|1) Bring up the 3D rendering from PCBNEW \(ALT-3\).  Select\
+|the BOTTOM view \(RightClick-"View Bottom"\).\
+|2) Perform a screen capture.  Save the capture to the\
+|production-package directory.  Select the dummy file name\
+|"    \"$(RENDERFILE_BOTTOM)_\""\
+|and delete the trailing \"_\".  Then click Save.
 endef
 
 define BOM_MSG
-The BOM file must be manually generated.  The BOM file requires the KiBOM plugin.|\
-Please ensure that KiBOM is installed.  To generate the BOM file:||\
-1) Copy the file 'bom.ini' in the templates directory to the main directory:||\
-"   cp templates_dir/bom.ini .."||\
-2) In EESChema, select Tools->Generate BOM.  Select KIBOM_CLI and click "Generate"|
+|The BOM file must be manually generated.  The BOM file requires the KiBOM plugin.\
+|Please ensure that KiBOM is installed.  To generate the BOM file:\
+|1) Copy the file 'bom.ini' in the templates directory to the main directory:\
+|"   cp templates_dir/bom.ini .."\
+|2) In EESChema, select Tools->Generate BOM.  Select KIBOM_CLI and click "Generate"|
 endef
 
 define SCHEM_MSG
-The Schematic PDF file must be manually generated:||\
-1) In EESChema, select File->Plot to bring up the Plot dialog||\
-2) Select PDF output format.||\
-3) Check "Plot Drawing Sheet"||\
-4) Click "Plot All Pages"
+|The Schematic PDF file must be manually generated:\
+|1) In EESChema, select File->Plot to bring up the Plot dialog\
+|2) Select PDF output format.\
+|3) Check "Plot Drawing Sheet"\
+|4) Click "Plot All Pages"
 endef
 
 define STEPFILE_MSG
-The STEP file must be manually generated.||\
-1) From PCBNEW, select File->Export->STEP||\
-2) Save to the production package directory.  Select the placeholder filename:||\
-"    $(STEPFILE)_"||\
-3) Remove the trailing \"_\" and click "Save"
+|The STEP file must be manually generated.\
+|1) From PCBNEW, select File->Export->STEP\
+|2) Save to the production package directory.  Select the placeholder filename:\
+|"    $(STEPFILE)_"\
+|3) Remove the trailing \"_\" and click "Save"
 endef
 
 # KiCad doesn't automate saving of rendering files, which must be
@@ -159,8 +200,6 @@ stepfile:
 		echo "--> Found assembly STEP file: $(STEPFILE)"; \
 	fi
 
-
-
 .Phony: renderfiles
 renderfiles: renderfile_top renderfile_bottom
 
@@ -182,40 +221,42 @@ renderfile_bottom:
 		echo; \
 	else \
 		echo "--> Found bottom assembly rendering: $(RENDERFILE_BOTTOM)"; \
-	fi
+  fi
 
 renderfiles: renderfile_top renderfile_bottom
 
-.Phoney: readme
-readme:
-	@if [ ! -f "$(READMEFILE)" ]; then \
-		echo "Creating Readme File $(READMEFILE)."; \
-		echo "$(README_TEXT)"|tr '|' '\n' > $(READMEFILE); \
-		echo; \
-	else \
-		echo "--> Found readme file $(READMEFILE)."; \
-		echo "    - Customize in your editor"; \
-		echo "    - To recreate, delete and run \"make readme\"" \
-	fi
+readme: $(READMEFILE)
+
+readmetxt: $(READMEFILETXT)
+
+readmepdf: $(READMEFILEPDF)
+
+$(READMEFILETXT): Makefile
+	@echo "Creating Readme File $(READMEFILETXT)."; \
+	echo "$(README_TEXT)"|tr '|' '\n' | sed 's/+++/   /g'  > $(READMEFILETXT);
+
+$(READMEFILEPDF): $(READMEFILETXT)
+	@echo "Creating Readme File $(READMEFILEPDF)."; \
+	pandoc -f rst -t pdf -o "$(READMEFILEPDF)" "$(READMEFILETXT)";
 
 jpg:
 	(for i in $.jpg; do convert ${i%%png}jpg; done)
 
 zip: $(PCBZIPFILE) $(BOMFILE) $(RENDERFILES) $(READMEFILE)
-	echo removing old zip. . .
-	rm -rf $(PKGZIPFILE)
-	echo creating zip. . .
+	@echo removing old zip. . . \
+	rm -rf $(PKGZIPFILE) \
+	echo creating zip. . . \
 	zip -9r $(PKGZIPFILE) \
-	    $(PCBZIPFILE) \
-		$(READMEFILE) \
-		$(SCHEMFILE) \
-		$(RENDERFILES) \
-		$(BOMFILE) \
-		$(STEPFILE) \
-		programming_files_dir \
-		diagrams_dir \
-		work_instructions_dir \
-		labels_dir
+	$(PCBZIPFILE) \
+	(READMEFILE) \
+	(SCHEMFILE) \
+	(RENDERFILES) \
+	(BOMFILE) \
+	(STEPFILE) \
+	rogramming_files_dir \
+	diagrams_dir \
+	ork_instructions_dir \
+	labels_dir
 
 $(PCBZIPFILE):
 	cd PCB_DIR; make zip

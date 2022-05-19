@@ -1,40 +1,81 @@
-PROJECT_DESC="Asteroids Deluxe <-> Asteroids Adapter"
+PROJECT_DESC="Asteroids PCB to Cabinet Adapter"
 BARENAME=asteroids-adapter
 REV=2
 BASENAME=$(BARENAME)-Rev_$(REV)
 VARIANT=
 NAME=$(BASENAME)$(VARIANT)
-READMEFILE=read.me
+
+READMEFILETXT=README-PCB-$(BASENAME).rst
+READMEFILEPDF=README-PCB-$(BASENAME).pdf
+READMEFILE=$(REDMEFILETXT)
+
+SMT=true
+LAYERS=2
 
 TOP_SOLDER_EXT = gts
 TOP_SOLDER_DSC = F_Mask
+TOP_SOLDER_GBR = "$(BASENAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT)"
 TOP_COPPER_EXT = gtl
 TOP_COPPER_DSC = F_Cu
-TOP_PASTE_EXT = gtp
-TOP_PASTE_DSC = F_Paste
+TOP_COPPER_GBR = "$(BASENAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT)"
 TOP_SILK_EXT = gto
 TOP_SILK_DSC = F_Silkscreen
+TOP_SILK_GBR = "$(BASENAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT)"
 BOT_SOLDER_EXT = gbs
 BOT_SOLDER_DSC = B_Mask
+BOT_SOLDER_GBR = "$(BASENAME)_$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT)"
 BOT_COPPER_EXT = gbl
 BOT_COPPER_DSC = B_Cu
-BOT_PASTE_EXT = gbp
-BOT_PASTE_DSC = B_Paste
+BOT_COPPER_GBR = "$(BASENAME)_$(BOT_COPPER_DSC).$(BOT_COPPER_EXT)"
 BOT_SILK_EXT = gbo
 BOT_SILK_DSC = B_Silkscreen
-GND1_EXT = g2
-GND1_DSC = In1_Cu
-GND2_EXT = g3
-GND2_DSC = In2_Cu
+BOT_SILK_GBR = "$(BASENAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)"
 OUTLN_EXT = gm1
 OUTLN_DSC = Edge_Cuts
+OUTLN_GBR = "$(BASENAME)_$(OUTLN_DSC).$(OUTLN_EXT)"
 DRILL_EXT = DRL
+
+ifeq (SMT,true)
+TOP_PASTE_EXT = gtp
+TOP_PASTE_DSC = F_Paste
+TOP_PASTE_GBR = "$(BASENAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT)"
+BOT_PASTE_EXT = gbp
+BOT_PASTE_DSC = B_Paste
+BOT_PASTE_GBR = "$(BASENAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT)"
+else
+TOP_PASTE_EXT =
+TOP_PASTE_DSC =
+TOP_PASTE_GBR =
+BOT_PASTE_EXT =
+BOT_PASTE_DSC =
+BOT_PASTE_GBR =
+endif
+
+ifeq (LAYERS,4)
+GND1_EXT = g2
+GND1_DSC = In1_Cu
+GND1_GBR = "$(BASENAME)_$(GND1_DSC).$(GND1_EXT)"
+GND2_EXT = g3
+GND2_DSC = In2_Cu
+GND2_GBR = "$(BASENAME)_$(GND2_DSC).$(GND2_EXT)"
+else
+GND1_EXT =
+GND1_DSC =
+GND1_GBR =
+GND2_EXT =
+GND2_DSC =
+GND2_GBR =
+GND1_README =
+GND2_README =
+endif
+
 
 OUTPUT_EXTS = $(addprefix *., $(TOP_SOLDER_EXT) $(TOP_COPPER_EXT) $(TOP_SILK_EXT) \
                $(BOT_SOLDER_EXT) $(BOT_COPPER_EXT) $(BOT_SILK_EXT) \
-			   $(OUTLN_EXT) $(DRILL_EXT))
-#			   $(GND1_EXT) $(GND2_EXT) \
-#			   $(TOP_PASTE_EXT) $(BOT_PASTE_EXT)
+			   $(OUTLN_EXT) $(DRILL_EXT)) \
+			   $(TOP_PASTE_EXT) $(BOT_PASTE_EXT) \
+			   $(GND1_EXT) $(GND2_EXT)
+
 
 DRILDIR = outputs
 GERBDIR = outputs
@@ -48,99 +89,122 @@ DUMMY_TARGETS = $(FAB_DUMMIES)
 ZIPFILE = ../$(NAME)-pcbfab.zip
 
 define FAB_TOP_MSG
-The assembly rendering \"$(FAB_TOP)\"|\
-must be manually generated with the following steps:||\
-1) Bring up the 3D rendering from PCBNEW \(ALT-3\).||\
-2) Deselect the 3D model visibility for all components.||\
-3) Select the TOP view \(RightClick-"View Top"\).||\
-2) Perform a screen capture.  Save the capture to the|\
-\"production-package/PCB_dir\" directory.  Select the dummy file name||\
-"    \"$(FAB_TOP)_\""||\
-and delete the trailing \"_\".  Then click Save.
+|The assembly rendering \"$(FAB_TOP)\"\
+|must be manually generated with the following steps:|\
+|1) Bring up the 3D rendering from PCBNEW \(ALT-3\).|\
+|2) Deselect the 3D model visibility for all components.|\
+|3) Select the TOP view \(RightClick-"View Top"\).|\
+|2) Perform a screen capture.  Save the capture to the\
+|\"production-package/PCB_dir\" directory.  Select the dummy file name|\
+|"    \"$(FAB_TOP)_\""|\
+|and delete the trailing \"_\".  Then click Save.
 endef
 
 define FAB_BOTTOM_MSG
-The assembly rendering \"$(FAB_BOTTOM)\"|\
-must be manually generated with the following steps:||\
-1) Bring up the 3D rendering from PCBNEW \(ALT-3\).||\
-2) Deselect the 3D model visibility for all components.||\
-3) Select the BOTTOM view \(RightClick-"View Bottom"\).||\
-2) Perform a screen capture.  Save the capture to the|\
-\"production-package/PCB_dir\" directory.  Select the dummy file name||\
-"    \"$(FAB_BOTTOM)_\""||\
-and delete the trailing \"_\".  Then click Save.
+|The assembly rendering \"$(FAB_BOTTOM)\"\
+|must be manually generated with the following steps:|\
+|1) Bring up the 3D rendering from PCBNEW \(ALT-3\).|\
+|2) Deselect the 3D model visibility for all components.|\
+|3) Select the BOTTOM view \(RightClick-"View Bottom"\).|\
+|2) Perform a screen capture.  Save the capture to the\
+|\"production-package/PCB_dir\" directory.  Select the dummy file name|\
+|"    \"$(FAB_BOTTOM)_\""|\
+|and delete the trailing \"_\".  Then click Save.
 endef
+
 
 define README_TEXT
--*- text -*-|\
-Project: "$(PROJECT_DESC)"|\
-Board: "$(BASENAME)"||\
-Service:|\
-Manufacturing and inspection to IPC class 3 standard.|\
-RoHS compliant|\
-PCB Material: FR4|\
-94V-0 marking|\
-Layers: 2|\
-Copper thickness: 1 oz all layers|\
-Stackup: All tolerancec 10%|\
-    Total thickness: 0.062\"|\
-    top layer    1oz copper|\
-    prepreg      2x2116|\
-    second layer 1oz copper|\
-    core         0.040\" core|\
-    third layer  1oz copper|\
-    prepreg      2x2116|\
-    bottom layer 1oz copper|\
-Finish: ENIG|||\
-GERBER BOARD OUTLINE FILE NAME        ;"$(BASENAME)"_"$(OUTLN_DSC)"."$(OUTLN_EXT)"|\
-GERBER TOP LAYER FILE NAME            ;"$(BASENAME)"_"$(TOP_COPPER_DSC)"."$(TOP_COPPER_EXT)"|\
-GERBER BOTTOM LAYER FILE NAME         ;"$(BASENAME)"_"$(BOTTOM_COPPER_DSC)"."$(BOT_COPPER_EXT)"|\
-GERBER TOP SOLDER MASK FILE NAME      ;"$(BASENAME)"_"$(TOP_SOLDER_DSC)"."$(TOP_SOLDER_EXT)"|\
-GERBER BOTTOM SOLDER MASK FILE NAME   ;"$(BASENAME)"_"$(BOTTOM_SOLDER_DSC)"."$(BOT_SOLDER_EXT)"|\
-GERBER TOP SILK SCREEN FILE NAME      ;"$(BASENAME)"_"$(TOP_SLIK_DSC)"."$(TOP_SILK_EXT)"|\
-EXCELLON NC DRILL (PTH) FILE NAME     ;"$(BASENAME)"-PTH.DRL|\
-EXCELLON NC DRILL (NPTH) FILE NAME    ;"$(BASENAME)"-NPTH.DRL|||\
-FAB DRAWINGS:|\
-    Bare_PCB-"$(BASENAME)"-top.PDF - 3D renderings of the top of the bare PCB|\
-    Bare_PCB-"$(BASENAME)"-bottom.PDF - 3D renderings of the bottom of the bare PCB|||\
-GENERAL INFO:||\
-This board was developed with Kicad 6||\
-The Gerber files are in 2.5 RS274X format.|||\
-SPECIAL INSTRUCTIONS:||\
-** Please note there are TWO Excellon Drill files, one for plated through holes|\
-   (PTH), and one for non-plated through holes (NPTH).||\
-** The board outline is delineated in the Gerber file|\
-   ""$(BASENAME)"_"$(OUTLN_DSC)"."$(OUTLN_EXT)""||\
-Thanks.
+"$(PROJECT_DESC)"\
+|------------------------------------------------------------------------------------|\
+|:Board: "$(BASENAME)"\
+||Service\
+|=======|\
+|   * Manufacturing and inspection to IPC class 3 standard.\
+|   * RoHS compliant\
+|   * PCB Material: FR4\
+|   * 94V-0 marking\
+|   * Layers: 2\
+|   * Copper thickness: 1 oz all layers\
+|   * Stackup: All tolerancec 10%\
+|       * Total thickness: 0.062\"\
+|       * top layer    1oz copper\
+|       * prepreg      2x2116\
+|       * second layer 1oz copper\
+|       * core         0.040\" core\
+|       * third layer  1oz copper\
+|       * prepreg      2x2116\
+|       * bottom layer 1oz copper\
+|       * Finish: ENIG||\
+|Files\
+|=====|\
+|:BOARD OUTLINE: - :code:\`"$(OUTLN_GBR)"\`\
+|:TOP LAYER: - :code:\`"$(TOP_COPPER_GBR)"\`\
+|:BOTTOM LAYER: - :code:\`"$(BOT_COPPER_GBR)"\`\
+|:TOP SOLDER MASK: - :code:\`"$(TOP_SOLDER_GBR)"\`\
+|:BOTTOM SOLDER MASK: - :code:\`"$(BOT_SOLDER_GBR)"\`\
+|:TOP SILK SCREEN: - :code:\`"$(TOP_SILK_GBR)"\`\
+|:EXCELLON DRILL (Plated): - :code:\`"$(BASENAME)-PTH.DRL"\`\
+|:EXCELLON DRILL (Non-plated): :code:\`"$(BASENAME)-NPTH.DRL"\`\
+||Fab Drawings\
+|============|\
+|:Bare_PCB-"$(BASENAME)"-top.PDF: - :code:\`3D rendering of the top of the bare PCB\`\
+|.. image:: ./$(FAB_TOP)\
+|:Bare_PCB-"$(BASENAME)"-bottom.PDF: - :code:\`3D rendering of the bottom of the bare PCB\`\
+|.. image:: ./$(FAB_BOTTOM)\
+||General Info\
+|============|\
+|   * This board was developed with Kicad 6\
+|   * The Gerber files are in 2.5 RS274X format.\
+||Special Instructions\
+|====================|\
+|  * Please note there are TWO Excellon Drill files, one for plated through holes (PTH), and one for non-plated through holes (NPTH).\
+|  * The board outline is delineated in the Gerber file "$(OUTLN_GBR)"|\
+|Thanks.
 endef
 
-all: dummies copy renderfiles readme
+define DRL_FAIL
+|Missing drill file.  To generate the drill files, within PCBNew:|\
+|- Select File->Plot.  Click "Generate Drill Files" at the bottom right side of the dialog.\
+|- Select the following options:\
+|  * Excellon, \"Use route command\"\
+|  * Drill origin: Absolute\
+|  * Drill units: inches\
+|  * Zeros Format: Decimal format\
+|  * Precision: 2.4\
+|- Select \"Generate Drill File\"|
+endef
 
-.Phoney: readme
-readme:
-	@if [ ! -f "$(READMEFILE)" ]; then \
-		echo "Creating Readme File $(READMEFILE)."; \
-		echo "$(README_TEXT)"|tr '|' '\n' > $(READMEFILE); \
-		echo; \
-	else \
-		echo "--> Found readme file $(READMEFILE)."; \
-		echo "    - Customize in your editor"; \
-		echo "    - To recreate, delete and run \"make readme\"" \
-	fi
+define GBR_FAIL
+|Missing gerber file.  To generate the gerber files, within PCBNew:|\
+|- Select File->Plot.  Click "Generate Drill Files" at the bottom right side of the dialog.\
+|- Select the following layers:\
+|  * F.Cu\
+|  * B.Cu\
+|  * F.Silkscreen\
+|  * B.Silkscreen\
+|  * F.Paste\
+|  * B.Paste\
+|  * F.Mask\
+|  * B.Mask\
+|  * Edge.Cuts|
+endef
 
 
-.Phoney: xreadme
-xreadme:
-	@if [ ! -f "$(READMEFILE)" ]; then \
-		echo "Creating Readme File $(READMEFILE)."; \
-		echo "$(README_TEXT)"|tr '|' '\n' > $(READMEFILE); \
-		echo; \
-	else \
-		echo "--> Found readme file $(READMEFILE)."; \
-		echo "    - Customize in your editor"; \
-		echo "    - To recreate, delete and run \"make readme\""; \
-	fi
+all: dummies copy renderfiles readme readmetex
 
+readme: $(READMEFILE)
+
+readmetxt: $(READMEFILETXT)
+
+readmepdf: $(READMEFILEPDF)
+
+$(READMEFILETXT): Makefile
+	@echo "Creating Readme File $(READMEFILETXT)."; \
+	echo "$(README_TEXT)"|tr '|' '\n' | sed 's/+++/   /g'  > $(READMEFILETXT);
+
+$(READMEFILEPDF): $(READMEFILETXT)
+	@echo "Creating Readme File $(READMEFILEPDF)."; \
+	pandoc -f rst -t pdf -o "$(READMEFILEPDF)" "$(READMEFILETXT)";
 
 
 .Phony: renderfiles
@@ -189,10 +253,11 @@ jpg: $(NAME).png
 	for i in *.png; do echo $$i '->' $${i%%png}jpg; convert $$i $${i%%png}jpg; done
 
 
+
 copy:
-	cp $(DRILDIR)/$(BARENAME)-PTH.$(DRILL_EXT) ./$(NAME)-PTH.$(DRILL_EXT)
-	cp $(DRILDIR)/$(BARENAME)-NPTH.$(DRILL_EXT) ./$(NAME)-NPTH.$(DRILL_EXT)
-	cp $(GERBDIR)/$(BARENAME)-$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) ./$(NAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT)
+	cp $(DRILDIR)/$(BARENAME)-PTH.$(DRILL_EXT) ./$(NAME)-PTH.$(DRILL_EXT) || echo "$(DRILL_FAIL)"|tr '|' '\n'
+	cp $(DRILDIR)/$(BARENAME)-NPTH.$(DRILL_EXT) ./$(NAME)-NPTH.$(DRILL_EXT) || echo "$(DRILL_FAIL)"|tr '|' '\n'
+	cp $(GERBDIR)/$(BARENAME)-$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) ./$(NAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) || echo "$(GBR_FAIL)" | tr '|' '\n'
 	cp $(GERBDIR)/$(BARENAME)-$(TOP_COPPER_DSC).$(TOP_COPPER_EXT) ./$(NAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT)
 	cp $(GERBDIR)/$(BARENAME)-$(TOP_SILK_DSC).$(TOP_SILK_EXT) ./$(NAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT)
 	cp $(GERBDIR)/$(BARENAME)-$(BOT_SILK_DSC).$(BOT_SILK_EXT) ./$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)
