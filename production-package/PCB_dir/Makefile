@@ -114,11 +114,10 @@ define FAB_BOTTOM_MSG
 |and delete the trailing \"_\".  Then click Save.
 endef
 
-
 define README_TEXT
-"$(PROJECT_DESC)"\
+"$(BARENAME)  \($(PROJECT_DESC)\)"\
 |------------------------------------------------------------------------------------|\
-|:Board: "$(BASENAME)"\
+||:Board: "$(BASENAME)"\
 ||Service\
 |=======|\
 |   * Manufacturing and inspection to IPC class 3 standard.\
@@ -127,16 +126,13 @@ define README_TEXT
 |   * 94V-0 marking\
 |   * Layers: 2\
 |   * Copper thickness: 1 oz all layers\
+|   * Finish: ENIG|\
 |   * Stackup: All tolerancec 10%\
-|       * Total thickness: 0.062\"\
-|       * top layer    1oz copper\
-|       * prepreg      2x2116\
-|       * second layer 1oz copper\
-|       * core         0.040\" core\
-|       * third layer  1oz copper\
-|       * prepreg      2x2116\
-|       * bottom layer 1oz copper\
-|       * Finish: ENIG||\
+|       1. Total thickness: 0.062\"\
+|       1. top layer    1oz copper\
+|       1. core         0.059\"\
+|       1. bottom layer 1oz copper\
+|\
 |Files\
 |=====|\
 |:BOARD OUTLINE: - :code:\`"$(OUTLN_GBR)"\`\
@@ -145,15 +141,19 @@ define README_TEXT
 |:TOP SOLDER MASK: - :code:\`"$(TOP_SOLDER_GBR)"\`\
 |:BOTTOM SOLDER MASK: - :code:\`"$(BOT_SOLDER_GBR)"\`\
 |:TOP SILK SCREEN: - :code:\`"$(TOP_SILK_GBR)"\`\
+|:BOTTOM SILK SCREEN: - :code:\`"$(BOT_SILK_GBR)"\`\
 |:EXCELLON DRILL (Plated): - :code:\`"$(BASENAME)-PTH.DRL"\`\
 |:EXCELLON DRILL (Non-plated): :code:\`"$(BASENAME)-NPTH.DRL"\`\
 ||Fab Drawings\
 |============|\
-|:Bare_PCB-"$(BASENAME)"-top.PDF: - :code:\`3D rendering of the top of the bare PCB\`\
-|.. image:: ./$(FAB_TOP)\
-|:Bare_PCB-"$(BASENAME)"-bottom.PDF: - :code:\`3D rendering of the bottom of the bare PCB\`\
-|.. image:: ./$(FAB_BOTTOM)\
-||General Info\
+|:$(FAB_TOP): - :code:\`3D rendering of the top of the bare PCB\`\
+|:$(FAB_BOTTOM): - :code:\`3D rendering of the bottom of the bare PCB\`\
+|\
+|.. figure:: ./$(FAB_TOP)||\
+|   TOP side rendering of bare PCB||\
+|.. figure:: ./$(FAB_BOTTOM)||\
+|   BOTTOM side rendering of bare PCB||\
+|General Info\
 |============|\
 |   * This board was developed with Kicad 6\
 |   * The Gerber files are in 2.5 RS274X format.\
