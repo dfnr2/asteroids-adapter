@@ -13,9 +13,6 @@ READMEFILETXT=$(READMEFILEBASE).rst
 READMEFILEPDF=$(READMEFILEBASE).pdf
 READMETARGET=readme$(README_STYLE)
 
-SMT=true
-LAYERS=2
-
 TOP_SOLDER_EXT = gts
 TOP_SOLDER_DSC = F_Mask
 TOP_SOLDER_GBR = "$(BASENAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT)"
@@ -39,45 +36,25 @@ OUTLN_DSC = Edge_Cuts
 OUTLN_GBR = "$(BASENAME)_$(OUTLN_DSC).$(OUTLN_EXT)"
 DRILL_EXT = DRL
 
-ifeq (SMT,true)
 TOP_PASTE_EXT = gtp
 TOP_PASTE_DSC = F_Paste
 TOP_PASTE_GBR = "$(BASENAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT)"
 BOT_PASTE_EXT = gbp
 BOT_PASTE_DSC = B_Paste
 BOT_PASTE_GBR = "$(BASENAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT)"
-else
-TOP_PASTE_EXT =
-TOP_PASTE_DSC =
-TOP_PASTE_GBR =
-BOT_PASTE_EXT =
-BOT_PASTE_DSC =
-BOT_PASTE_GBR =
-endif
 
-ifeq (LAYERS,4)
 GND1_EXT = g2
 GND1_DSC = In1_Cu
 GND1_GBR = "$(BASENAME)_$(GND1_DSC).$(GND1_EXT)"
 GND2_EXT = g3
 GND2_DSC = In2_Cu
 GND2_GBR = "$(BASENAME)_$(GND2_DSC).$(GND2_EXT)"
-else
-GND1_EXT =
-GND1_DSC =
-GND1_GBR =
-GND2_EXT =
-GND2_DSC =
-GND2_GBR =
-GND1_README =
-GND2_README =
-endif
 
 OUTPUT_EXTS = $(addprefix *., $(TOP_SOLDER_EXT) $(TOP_COPPER_EXT) $(TOP_SILK_EXT) \
                $(BOT_SOLDER_EXT) $(BOT_COPPER_EXT) $(BOT_SILK_EXT) \
 			   $(OUTLN_EXT) $(DRILL_EXT)) \
-			   $(TOP_PASTE_EXT) $(BOT_PASTE_EXT) \
-			   $(GND1_EXT) $(GND2_EXT)
+			   $(TOP_PASTE_EXT) $(BOT_PASTE_EXT)
+#			   $(GND1_EXT) $(GND2_EXT)
 
 DRILDIR = outputs
 GERBDIR = outputs
@@ -233,9 +210,10 @@ renderfile_bottom:
 renderfiles: renderfile_top renderfile_bottom
 
 clean:
-	rm -f $(OUTPUT_EXTS)
+	rm -f $(OUTPUT_EXTS) $(READMEFILETXT) $(READMEFILEPDF) *.zip $(DUMMY_TARGETS) *_
+
 veryclean:
-	rm -rfv Gerber "NC Drill" $(NAME)* $(BARENAME)*
+	rm -rfv outputs $(NAME)* $(BARENAME)*
 	rm -rfv *.jpg *.JPG *.pdf *.pdf *.png *.PNG
 
 .PHONY: dummies
@@ -247,9 +225,6 @@ dummies:
 
 gvp: gvp_template.gvp
 	sed -e "s/@@NAME@@/$(NAME)/" < $< > $(NAME).gvp
-
-jpg: $(NAME).png
-	for i in *.png; do echo $$i '->' $${i%%png}jpg; convert $$i $${i%%png}jpg; done
 
 copy:
 	cp $(DRILDIR)/$(BARENAME)-PTH.$(DRILL_EXT) ./$(NAME)-PTH.$(DRILL_EXT) || echo "$(DRILL_FAIL)"|tr '|' '\n'
