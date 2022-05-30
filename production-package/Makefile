@@ -36,7 +36,7 @@ SCHEMFILE=Schematic-$(PRJNAME)-$(VARIANTNAME).pdf
 STEPFILE=Model-3D-$(PCBNAME)-$(VARIANTNAME).STEP
 DUMMY_STEPFILE="$(STEPFILE)_"
 DUMMY_TARGETS=$(DUMMY_STEPFILE) $(DUMMY_RENDERFILES)
-
+README_RENDERFILE=current_top_rendering.jpg
 
 
 define README_TEXT
@@ -128,6 +128,10 @@ define RENDER_TOP_MSG
 |and delete the trailing \"_\".  Then click Save.
 endef
 
+define README_RENDERFILE_LINK
+|.. image:: production-package/$(RENDERFILE_TOP)|
+endef
+
 define RENDER_BOTTOM_MSG
 |The assembly rendering \"$(RENDERFILE_BOTTOM)\"\
 |must be manually generated with the following steps:|\
@@ -202,6 +206,12 @@ $(BOMFILE):
 
 bomfile: $(BOMFILE)
 
+$(README_RENDERFILE): $(RENDERFILE_TOP)
+	@echo "Copying rendered image for README."
+	@cp $(RENDERFILE) "$(README_RENDERFILE_LINK)"|tr '|' '\n' > $@
+
+readme_link: $(README_RENDERFILE_INCLUDE)
+
 $(SCHEMFILE):
 	@if [ ! -f "$(GENERATED_SCHEMFILE)" ]; then \
 		echo "$(SCHEM_MSG)"|tr '|' '\n'; \
@@ -221,11 +231,12 @@ $(STEPFILE):
 		echo "--> Found assembly STEP file: $(STEPFILE)"; \
 	fi
 
+
 .Phony: stepfile
 stepfile: $(STEPFILE)
 
 .Phony: renderfiles
-renderfiles: renderfile_top renderfile_bottom
+renderfiles: renderfile_top renderfile_bottom readme_link
 
 .Phony: renderfile_top
 renderfile_top:
@@ -235,6 +246,8 @@ renderfile_top:
 		echo; \
 	else \
 		echo "--> Found top assembly rendering: $(RENDERFILE_TOP)"; \
+		echo "    Creating copy for README to include.";\
+		cp $(RENDERFILE_TOP) $(README_RENDERFILE); \
 	fi
 
 .Phony: renderfile_bottom

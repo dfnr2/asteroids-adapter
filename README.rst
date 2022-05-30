@@ -55,7 +55,32 @@ different set of considerations:
 The Adapter
 -----------
 
-.. image production_package/Renderings-top-asteroids-adapter-Rev_4.0.0-Production.jpg
+.. _production_package: https://github.com/dfnr2/asteroids-adapter/tree/main/production-package/
+
+The adapter was created with KiCad 6.0.5. KiCad was used because it is freely
+available and multi-platform. The adapter design files are in the top directory.
+For those who wish to produce the PCB without installing KiCad, a ZIP file is
+available in the production_package_ directory.
+
+.. image:: production-package/current_top_rendering.jpg
+
+Assembly Notes
+--------------
+
+The PCB is designed to accomodate a variety of 44-pin edge connectors, so that almost any standard 0.156" connector will work.
+
+- Vertical (straight) edge connectors (such as EDAC 305-044-521-202) can be
+  sourced cheaply and are readily available. With a vertical connector, the
+  adapter will be perpendicular to the Asteroids PCB.
+
+- A Right-angle edge connector (such as EDAC 307-044-558-201) can be used to
+  keep the adapter parallel and aligned the Asteroids PCB. These connectors are
+  in production, but as far as I know are only available from EDAC, and could
+  potentially be subject to supply chain issues.
+
+
+Configuration
+-------------
 
 The asteroids adapter will accommodate either an Asteroids PCB in an Asteroids
 Deluxe Cabinet, or an Asteroids Deluxe PCB in an Asteroids cabinet.
