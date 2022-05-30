@@ -1,7 +1,7 @@
 NAME=asteroids-adapter
-PROJECT_DESC="Asteroids PCB CABINET ADAPTER"
+PROJECT_DESC="Asteroids PCB to Cabinet Adapter"
 VARIANTNAME=Production
-BOARDREV=2
+BOARDREV=4
 BOARDREVMINOR=
 SCHEMATIC_REV=0
 PROJECT_REV=0
@@ -11,10 +11,12 @@ PRJREV=$(BOARDREV).$(SCHEMATIC_REV).$(PROJECT_REV)
 PCBNAME=$(NAME)-Rev_$(PCBREV)$(BOARDREVMINOR)
 SCHNAME=$(NAME)-Rev_$(SCHREV)
 PRJNAME=$(NAME)-Rev_$(PRJREV)$(BOARDREVMINOR)
+LAYERS=2
 
 PCBDIR="./PCB_dir"
 PCBZIPFILE=$(PCBNAME)-pcbfab.zip
 PKGZIPFILE=$(PRJNAME)-package.zip
+GENERATED_BOMFILE = ../$(NAME)_bom_$(SCHREV).csv
 BOMFILE=BOM-$(PRJNAME)-$(VARIANTNAME).csv
 
 #README_STYLE=rst
@@ -28,12 +30,12 @@ READMETARGET=readme$(README_STYLE)
 RENDERFILE_TOP=Renderings-top-$(PRJNAME)-$(VARIANTNAME).jpg
 RENDERFILE_BOTTOM=Renderings-bottom-$(PRJNAME)-$(VARIANTNAME).jpg
 RENDERFILES=$(RENDERFILE_TOP) $(RENDERFILE_BOTTOM)
-DUMMY_RENDERFILES=$(RENDERFILE_TOP)_ $(RENDERFILE_BOTTOM)_
+DUMMY_RENDERFILES=$(addsuffix _, $(RENDERFILES))
 GENERATED_SCHEMFILE=../$(NAME).pdf
-STEPFILE=Model-3D-$(PCBNAME)-$(VARIANTNAME).step
+SCHEMFILE=Schematic-$(PRJNAME)-$(VARIANTNAME).pdf
+STEPFILE=Model-3D-$(PCBNAME)-$(VARIANTNAME).STEP
 DUMMY_STEPFILE="$(STEPFILE)_"
 DUMMY_TARGETS=$(DUMMY_STEPFILE) $(DUMMY_RENDERFILES)
-GENERATED_BOMFILE = ../$(NAME)_bom_$(PCBREV).csv
 
 
 
@@ -45,7 +47,7 @@ define README_TEXT
 |=================|\
 |   * PCB and assembly to IPC class 3 standards\
 |   * 0.62 inch FR4, 94V-0 marked\
-|   * 2 layer stackup to be approved prior to manufacture\
+|   * $(LAYERS) layer stackup to be approved prior to manufacture\
 |   * ENIG finish, RoHS compliant|\
 |Standards\
 |=========|\
@@ -60,7 +62,7 @@ define README_TEXT
 |\
 ||Tracking\
 |========|\
-|None\
+|As specified in the BOM\
 |\
 ||Packaging\
 |=========|\
@@ -117,23 +119,23 @@ endef
 
 define RENDER_TOP_MSG
 |The assembly rendering \"$(RENDERFILE_TOP)\"\
-|must be manually generated with the following steps:\
+|must be manually generated with the following steps:|\
 |1) Bring up the 3D rendering from PCBNEW \(ALT-3\).  Select\
-|the TOP view \(RightClick-"View Top"\).\
+|the TOP view \(RightClick-"View Top"\).|\
 |2) Perform a screen capture.  Save the capture to the\
-|production-package directory.  Select the dummy file name\
-|"    \"$(RENDERFILE_TOP)_\""\
+|production-package directory.  Select the dummy file name|\
+|"    \"$(RENDERFILE_TOP)_\""|\
 |and delete the trailing \"_\".  Then click Save.
 endef
 
 define RENDER_BOTTOM_MSG
 |The assembly rendering \"$(RENDERFILE_BOTTOM)\"\
-|must be manually generated with the following steps:\
+|must be manually generated with the following steps:|\
 |1) Bring up the 3D rendering from PCBNEW \(ALT-3\).  Select\
-|the BOTTOM view \(RightClick-"View Bottom"\).\
+|the BOTTOM view \(RightClick-"View Bottom"\).|\
 |2) Perform a screen capture.  Save the capture to the\
-|production-package directory.  Select the dummy file name\
-|"    \"$(RENDERFILE_BOTTOM)_\""\
+|production-package directory.  Select the dummy file name|\
+|"    \"$(RENDERFILE_BOTTOM)_\""|\
 |and delete the trailing \"_\".  Then click Save.
 endef
 
@@ -157,6 +159,10 @@ endef
 define STEPFILE_MSG
 |The STEP file must be manually generated.\
 |1) From PCBNEW, select File->Export->STEP\
+|2) Check the following boxes:
+|   - Board Center Origin
+|   - Substitute similarly named models
+|   - Overwrite old file
 |2) Save to the production package directory.  Select the placeholder filename:\
 |"    $(STEPFILE)_"\
 |3) Remove the trailing \"_\" and click "Save"
@@ -167,8 +173,7 @@ endef
 # exported manually. the "dummies" target creates filename templates that can be
 # selected and edited (by removing the trailing "_") to help ensure that the
 
-all: dummies $(BOMFILE) $(RENDERFILES) $(SCHEMFILE) \
-	$(READMETARGET) pkgzip
+all: dummies bomfile renderfiles schemfile $(READMETARGET) pkgzip
 
 .phony: dummies
 dummies:
@@ -183,14 +188,16 @@ clean:
 .phony: veryclean
 veryclean: clean
 	rm -fv $(SCHEMFILE) $(RENDERFILES) $(BOMFILE)
+	rm -rfv *.jpg *.JPG *.pdf *.pdf *.png *.PNG
+	rm -f README* *rst *pdf *dvi
 	(cd PCB_dir; make veryclean)
 
 $(BOMFILE):
 	@if [ ! -f "$(GENERATED_BOMFILE)" ]; then \
 		echo "$(BOM_MSG)"|tr '|' '\n';\
 	else \
-		echo "--> Found BOM: cp ../$(NAME)_bom_$(PCBREV).csv $(BOMFILE)";\
-		cp ../$(NAME)_bom_$(PCBREV).csv $(BOMFILE);\
+		echo "--> Found BOM: $(GENERATED_BOMFILE).  Copying. . .";\
+		cp $(GENERATED_BOMFILE) $(BOMFILE);\
 	fi
 
 bomfile: $(BOMFILE)
@@ -205,8 +212,7 @@ $(SCHEMFILE):
 
 schemfile: $(SCHEMFILE)
 
-.Phony: stepfile
-stepfile:
+$(STEPFILE):
 	@if [ ! -f "$(STEPFILE)" ]; then\
 		echo; \
 		echo "$(STEPFILE_MSG)"|tr '|' '\n'; \
@@ -214,6 +220,9 @@ stepfile:
 	else \
 		echo "--> Found assembly STEP file: $(STEPFILE)"; \
 	fi
+
+.Phony: stepfile
+stepfile: $(STEPFILE)
 
 .Phony: renderfiles
 renderfiles: renderfile_top renderfile_bottom
@@ -257,12 +266,13 @@ $(READMEFILEPDF): $(READMEFILETXT)
 
 
 pkgzip: $(PCBZIPFILE) $(BOMFILE) $(RENDERFILES) $(READMEFILE)
-	@echo removing old zip. . . \
-	rm -rf $(PKGZIPFILE) \
-	echo creating zip. . . \
+	@echo removing old zip. . .; \
+	rm -rf $(PKGZIPFILE); \
+	echo creating zip. . .; \
 	zip -9r $(PKGZIPFILE) \
 	$(PCBZIPFILE) \
-	$(READMEFILE) \
+	$(READMEFILETXT) \
+	$(READMEFILEPDF) \
 	$(SCHEMFILE) \
 	$(RENDERFILES) \
 	$(BOMFILE) \

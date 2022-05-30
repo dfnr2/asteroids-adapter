@@ -1,12 +1,15 @@
 PROJECT_DESC="Asteroids PCB to Cabinet Adapter"
 BARENAME=asteroids-adapter
-REV=2
-BASENAME=$(BARENAME)-Rev_$(REV)
+REV=04
 VARIANT=
-NAME=$(BASENAME)$(VARIANT)
+LAYERS=2
+SMT=no
 
 #README_STYLE=rst
 README_STYLE=pdf
+
+BASENAME=$(BARENAME)-Rev_$(REV)
+NAME=$(BASENAME)$(VARIANT)
 
 READMEFILEBASE=README-PCB-$(NAME)
 READMEFILETXT=$(READMEFILEBASE).rst
@@ -15,46 +18,91 @@ READMETARGET=readme$(README_STYLE)
 
 TOP_SOLDER_EXT = gts
 TOP_SOLDER_DSC = F_Mask
-TOP_SOLDER_GBR = "$(BASENAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT)"
+TOP_SOLDER_GBR = "$(NAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT)"
 TOP_COPPER_EXT = gtl
 TOP_COPPER_DSC = F_Cu
-TOP_COPPER_GBR = "$(BASENAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT)"
+TOP_COPPER_GBR = "$(NAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT)"
 TOP_SILK_EXT = gto
 TOP_SILK_DSC = F_Silkscreen
-TOP_SILK_GBR = "$(BASENAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT)"
+TOP_SILK_GBR = "$(NAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT)"
 BOT_SOLDER_EXT = gbs
 BOT_SOLDER_DSC = B_Mask
-BOT_SOLDER_GBR = "$(BASENAME)_$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT)"
+BOT_SOLDER_GBR = "$(NAME)_$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT)"
 BOT_COPPER_EXT = gbl
 BOT_COPPER_DSC = B_Cu
-BOT_COPPER_GBR = "$(BASENAME)_$(BOT_COPPER_DSC).$(BOT_COPPER_EXT)"
+BOT_COPPER_GBR = "$(NAME)_$(BOT_COPPER_DSC).$(BOT_COPPER_EXT)"
 BOT_SILK_EXT = gbo
 BOT_SILK_DSC = B_Silkscreen
-BOT_SILK_GBR = "$(BASENAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)"
+BOT_SILK_GBR = "$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)"
 OUTLN_EXT = gm1
 OUTLN_DSC = Edge_Cuts
-OUTLN_GBR = "$(BASENAME)_$(OUTLN_DSC).$(OUTLN_EXT)"
+OUTLN_GBR = "$(NAME)_$(OUTLN_DSC).$(OUTLN_EXT)"
 DRILL_EXT = DRL
-
+DRILL_PTH = "$(NAME)-PTH.$(DRILL_EXT)"
+DRILL_NPTH = "$(NAME)-NPTH.$(DRILL_EXT)"
 TOP_PASTE_EXT = gtp
 TOP_PASTE_DSC = F_Paste
-TOP_PASTE_GBR = "$(BASENAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT)"
+TOP_PASTE_GBR = "$(NAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT)"
 BOT_PASTE_EXT = gbp
 BOT_PASTE_DSC = B_Paste
-BOT_PASTE_GBR = "$(BASENAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT)"
+BOT_PASTE_GBR = "$(NAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT)"
 
 GND1_EXT = g2
 GND1_DSC = In1_Cu
-GND1_GBR = "$(BASENAME)_$(GND1_DSC).$(GND1_EXT)"
+GND1_GBR = "$(NAME)_$(GND1_DSC).$(GND1_EXT)"
 GND2_EXT = g3
 GND2_DSC = In2_Cu
-GND2_GBR = "$(BASENAME)_$(GND2_DSC).$(GND2_EXT)"
+GND2_GBR = "$(NAME)_$(GND2_DSC).$(GND2_EXT)"
 
+ifeq ($(SMT),yes)
+PASTE_LAYERS= $(TOP_PASTE_GBR) $(BOT_PASTE_GBR)
+endif
+
+ifeq ($(LAYERS),4)
+OUTPUT_EXTS = $(addprefix *., $(TOP_SOLDER_EXT) $(TOP_COPPER_EXT) $(TOP_SILK_EXT) \
+               $(BOT_SOLDER_EXT) $(BOT_COPPER_EXT) $(BOT_SILK_EXT) \
+			   $(OUTLN_EXT) $(DRILL_EXT)) \
+			   $(TOP_PASTE_EXT) $(BOT_PASTE_EXT) \
+			   $(GND1_EXT) $(GND2_EXT)
+
+define STACKUP_DESC
+|   * Stackup: All tolerances 10%\
+|       1. Total thickness: 0.062 inch\
+|       1. top layer    1oz copper\
+|       1. prepreg      2x2116\
+|       1. second layer 1oz copper\
+|       1. core         0.039 inch core\
+|       1. third layer  1oz copper\
+|       1. prepreg      2x2116\
+|       1. bottom layer 1oz copper
+endef
+
+define INNER_PLANE_DESC
+|:INNER_PLANE 1: - :code:\`"$(GND1_GBR)"\`\
+|:INNER_PLANE 2: - :code:\`"$(GND2_GBR)"\`
+endef
+
+INNER_PLANES = $(GND1_GBR) $(GND2_GBR)
+
+endif
+
+ifeq ($(LAYERS),2)
 OUTPUT_EXTS = $(addprefix *., $(TOP_SOLDER_EXT) $(TOP_COPPER_EXT) $(TOP_SILK_EXT) \
                $(BOT_SOLDER_EXT) $(BOT_COPPER_EXT) $(BOT_SILK_EXT) \
 			   $(OUTLN_EXT) $(DRILL_EXT)) \
 			   $(TOP_PASTE_EXT) $(BOT_PASTE_EXT)
-#			   $(GND1_EXT) $(GND2_EXT)
+
+define STACKUP_DESC
+|   * Stackup: All tolerances 10%\
+|       1. Total thickness: 0.062 inch\
+|       1. top layer    1oz copper\
+|       1. core         0.059 inch\
+|       1. bottom layer 1oz copper
+endef
+
+EXTRA_PLANES =
+
+endif
 
 DRILDIR = outputs
 GERBDIR = outputs
@@ -101,26 +149,25 @@ define README_TEXT
 |   * RoHS compliant\
 |   * PCB Material: FR4\
 |   * 94V-0 marking\
-|   * Layers: 2\
+|   * Layers: $(LAYERS)\
 |   * Copper thickness: 1 oz all layers\
 |   * Finish: ENIG|\
-|   * Stackup: All tolerancec 10%\
-|       1. Total thickness: 0.062\"\
-|       1. top layer    1oz copper\
-|       1. core         0.059\"\
-|       1. bottom layer 1oz copper\
+$(STACKUP_DESC)\
 |\
 |Files\
 |=====|\
 |:BOARD OUTLINE: - :code:\`"$(OUTLN_GBR)"\`\
 |:TOP LAYER: - :code:\`"$(TOP_COPPER_GBR)"\`\
+$(INNER_PLANE_DESC)\
 |:BOTTOM LAYER: - :code:\`"$(BOT_COPPER_GBR)"\`\
-|:TOP SOLDER MASK: - :code:\`"$(TOP_SOLDER_GBR)"\`\
-|:BOTTOM SOLDER MASK: - :code:\`"$(BOT_SOLDER_GBR)"\`\
+|:TOP SOLDER MASK: - :code:\`"$(TOP_PASTE_GBR)"\`\
+|:BOTTOM SOLDER MASK: - :code:\`"$(BOT_PASTE_GBR)"\`\
+|:TOP PASTE MASK: - :code:\`"$(TOP_PASTE_GBR)"\`\
+|:BOTTOM PASTE MASK: - :code:\`"$(BOT_PASTE_GBR)"\`\
 |:TOP SILK SCREEN: - :code:\`"$(TOP_SILK_GBR)"\`\
 |:BOTTOM SILK SCREEN: - :code:\`"$(BOT_SILK_GBR)"\`\
-|:EXCELLON DRILL (Plated): - :code:\`"$(BASENAME)-PTH.DRL"\`\
-|:EXCELLON DRILL (Non-plated): :code:\`"$(BASENAME)-NPTH.DRL"\`\
+|:EXCELLON DRILL (Plated): - :code:\`"$(DRILL_PTH)"\`\
+|:EXCELLON DRILL (Non-plated): :code:\`"$(DRILL_NPTH)"\`\
 ||Fab Drawings\
 |============|\
 |:$(FAB_TOP): - :code:\`3D rendering of the top of the bare PCB\`\
@@ -210,11 +257,12 @@ renderfile_bottom:
 renderfiles: renderfile_top renderfile_bottom
 
 clean:
-	rm -f $(OUTPUT_EXTS) $(READMEFILETXT) $(READMEFILEPDF) *.zip $(DUMMY_TARGETS) *_
+	rm -f $(OUTPUT_EXTS) *rst *pdf *.zip $(DUMMY_TARGETS) *_
 
 veryclean:
 	rm -rfv outputs $(NAME)* $(BARENAME)*
 	rm -rfv *.jpg *.JPG *.pdf *.pdf *.png *.PNG
+	rm -f README* *rst *pdf *dvi
 
 .PHONY: dummies
 dummies:
@@ -227,59 +275,54 @@ gvp: gvp_template.gvp
 	sed -e "s/@@NAME@@/$(NAME)/" < $< > $(NAME).gvp
 
 copy:
-	cp $(DRILDIR)/$(BARENAME)-PTH.$(DRILL_EXT) ./$(NAME)-PTH.$(DRILL_EXT) || echo "$(DRILL_FAIL)"|tr '|' '\n'
-	cp $(DRILDIR)/$(BARENAME)-NPTH.$(DRILL_EXT) ./$(NAME)-NPTH.$(DRILL_EXT) || echo "$(DRILL_FAIL)"|tr '|' '\n'
-	cp $(GERBDIR)/$(BARENAME)-$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) ./$(NAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) || echo "$(GBR_FAIL)" | tr '|' '\n'
-	cp $(GERBDIR)/$(BARENAME)-$(TOP_COPPER_DSC).$(TOP_COPPER_EXT) ./$(NAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT)
-	cp $(GERBDIR)/$(BARENAME)-$(TOP_SILK_DSC).$(TOP_SILK_EXT) ./$(NAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT)
-	cp $(GERBDIR)/$(BARENAME)-$(BOT_SILK_DSC).$(BOT_SILK_EXT) ./$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)
-	cp $(GERBDIR)/$(BARENAME)-$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT) ./$(NAME)_$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT)
-	cp $(GERBDIR)/$(BARENAME)-$(BOT_COPPER_DSC).$(BOT_COPPER_EXT) ./$(NAME)_$(BOT_COPPER_DSC).$(BOT_COPPER_EXT)
-	cp $(GERBDIR)/$(BARENAME)-$(OUTLN_DSC).$(OUTLN_EXT) ./$(NAME)_$(OUTLN_DSC).$(OUTLN_EXT)
-#	cp $(GERBDIR)/$(BARENAME)-$(GND1_DSC).$(GND1_EXT) ./$(NAME)_$(GND1_DSC).$(GND1_EXT)
-#	cp $(GERBDIR)/$(BARENAME)-$(GND2_DSC).$(GND2_EXT) ./$(NAME)_$(GND2_DSC).$(GND2_EXT)
-#	cp $(GERBDIR)/$(BARENAME)-$(TOP_PASTE_DSC).$(TOP_PASTE_EXT) ./$(NAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT)
-#	cp $(GERBDIR)/$(BARENAME)-$(PWR1_DSC).$(PWR1_EXT) ./$(NAME)_$(PWR1_DSC).$(PWR1_EXT)
-#	cp $(GERBDIR)/$(BARENAME)-$(PWR2_DSC).$(PWR2_EXT) ./$(NAME)_$(PWR2_DSC).$(PWR2_EXT)
-#	cp $(GERBDIR)/$(BARENAME)-$(BOT_PASTE_DSC).$(BOT_PASTE_EXT) ./$(NAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT)
-#	cp $(GERBDIR)/$(BARENAME)-$(BOT_SILK_DSC).$(BOT_SILK_EXT) ./$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)
+	cp $(DRILDIR)/$(BARENAME)-PTH.$(DRILL_EXT) $(DRILL_PTH) || echo "$(DRILL_FAIL)"|tr '|' '\n'
+	cp $(DRILDIR)/$(BARENAME)-NPTH.$(DRILL_EXT) $(DRILL_NPTH) || echo "$(DRILL_FAIL)"|tr '|' '\n'
+	cp $(GERBDIR)/$(BARENAME)-$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) $(TOP_SOLDER_GBR) || echo "$(GBR_FAIL)" | tr '|' '\n'
+	cp $(GERBDIR)/$(BARENAME)-$(TOP_COPPER_DSC).$(TOP_COPPER_EXT) ./$(TOP_COPPER_GBR)
+	cp $(GERBDIR)/$(BARENAME)-$(TOP_SILK_DSC).$(TOP_SILK_EXT) ./$(TOP_SILK_GBR)
+	cp $(GERBDIR)/$(BARENAME)-$(BOT_SILK_DSC).$(BOT_SILK_EXT) ./$(BOT_SILK_GBR)
+	cp $(GERBDIR)/$(BARENAME)-$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT) ./$(BOT_SOLDER_GBR)
+	cp $(GERBDIR)/$(BARENAME)-$(BOT_COPPER_DSC).$(BOT_COPPER_EXT) ./$(BOT_COPPER_GBR)
+ifeq ($(SMT),yes)
+	cp $(GERBDIR)/$(BARENAME)-$(TOP_PASTE_DSC).$(TOP_PASTE_EXT) ./$(TOP_PASTE_GBR)
+	cp $(GERBDIR)/$(BARENAME)-$(BOT_PASTE_DSC).$(BOT_PASTE_EXT) ./$(BOT_PASTE_GBR)
+endif
+ifeq ($(LAYERS),4)
+	cp $(GERBDIR)/$(BARENAME)-$(GND1_DSC).$(GND1_EXT) ./$(GND1_GBR)
+	cp $(GERBDIR)/$(BARENAME)-$(GND2_DSC).$(GND2_EXT) ./$(GND2_GBR)
+endif
+	cp $(GERBDIR)/$(BARENAME)-$(OUTLN_DSC).$(OUTLN_EXT) ./$(OUTLN_GBR)
 
 gerbv:
 	gerbv \
-	$(NAME)_$(OUTLN_DSC).$(OUTLN_EXT) \
-	$(NAME)-PTH.$(DRILL_EXT) \
-	$(NAME)-NPTH.$(DRILL_EXT) \
-	$(NAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) \
-	$(NAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT) \
-	$(NAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT) \
-	$(NAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT) \
-	$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT) \
-	$(NAME)_$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT) \
-	$(NAME)_$(BOT_COPPER_DSC).$(BOT_COPPER_EXT) \
-	$(NAME)_$(GND1_DSC).$(GND1_EXT) \
-	$(NAME)_$(GND2_DSC).$(GND2_EXT)
-#	$(NAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT) \
-#	$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT) \
-#	$(NAME)_$(PWR1_DSC).$(PWR1_EXT) \
-#	$(NAME)_$(PWR2_DSC).$(PWR2_EXT) \
+	$(OUTLN_GBR) \
+	$(DRILL_PTH) \
+	$(DRILL_NPTH) \
+	$(TOP_SOLDER_GBR) \
+	$(TOP_COPPER_GBR) \
+	$(PASTE_LAYERS) \
+	$(TOP_SILK_GBR) \
+	$(BOT_SILK_GBR) \
+	$(BOT_SOLDER_GBR) \
+	$(BOT_COPPER_GBR) \
+	$(INNER_PLANES) \
+	$(BOT_SILK_GBR)
+
 
 zip: all
 	rm -f $(ZIPFILE)
 	zip -9 $(ZIPFILE) \
-	$(NAME)_$(OUTLN_DSC).$(OUTLN_EXT) \
-	$(NAME)-PTH.$(DRILL_EXT) \
-	$(NAME)-NPTH.$(DRILL_EXT) \
-	$(NAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) \
-	$(NAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT) \
-	$(NAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT) \
-	$(NAME)_$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT) \
-	$(NAME)_$(BOT_COPPER_DSC).$(BOT_COPPER_EXT) \
+	$(OUTLN_GBR) \
+	$(DRILL_PTH) \
+	$(DRILL_NPTH) \
+	$(TOP_SOLDER_GBR) \
+	$(TOP_COPPER_GBR) \
+	$(PASTE_LAYERS) \
+	$(TOP_SILK_GBR) \
+	$(BOT_SOLDER_GBR) \
+	$(BOT_COPPER_GBR) \
+	$(BOT_SILK_GBR) \
+	$(INNER_PLANES) \
 	$(FAB_FILES) \
-	$(READMEFILE)
-#	$(NAME)_$(GND1_DSC).$(GND1_EXT) \
-#	$(NAME)_$(GND2_DSC).$(GND2_EXT) \
-#	$(NAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT) \
-#	$(NAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT) \
-#	$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT) \
-#	$(NAME)_$(PWR1_DSC).$(PWR1_EXT) \
-#	$(NAME)_$(PWR2_DSC).$(PWR2_EXT) \
+	$(READMEFILEPDF) \
+	$(READMEFILETXT)
