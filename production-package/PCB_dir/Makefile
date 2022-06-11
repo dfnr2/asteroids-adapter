@@ -1,58 +1,57 @@
-PROJECT_DESC="Asteroids PCB to Cabinet Adapter"
-BARENAME=asteroids-adapter
-REV=04
-VARIANT=
+PROJECT_DESC=PCB
+NAME=PCB
+BOARDREV=1
+BOARDREVMINOR=
 LAYERS=2
 SMT=no
 
 #README_STYLE=rst
 README_STYLE=pdf
 
-BASENAME=$(BARENAME)-Rev_$(REV)
-NAME=$(BASENAME)$(VARIANT)
+PCBNAME=$(NAME)-Rev_$(BOARDREV)$(BOARDREVMINOR)
 
-READMEFILEBASE=README-PCB-$(NAME)
+READMEFILEBASE=README-PCB-$(PCBNAME)
 READMEFILETXT=$(READMEFILEBASE).rst
 READMEFILEPDF=$(READMEFILEBASE).pdf
 READMETARGET=readme$(README_STYLE)
 
 TOP_SOLDER_EXT = gts
 TOP_SOLDER_DSC = F_Mask
-TOP_SOLDER_GBR = "$(NAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT)"
+TOP_SOLDER_GBR = "$(PCBNAME)_$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT)"
 TOP_COPPER_EXT = gtl
 TOP_COPPER_DSC = F_Cu
-TOP_COPPER_GBR = "$(NAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT)"
+TOP_COPPER_GBR = "$(PCBNAME)_$(TOP_COPPER_DSC).$(TOP_COPPER_EXT)"
 TOP_SILK_EXT = gto
 TOP_SILK_DSC = F_Silkscreen
-TOP_SILK_GBR = "$(NAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT)"
+TOP_SILK_GBR = "$(PCBNAME)_$(TOP_SILK_DSC).$(TOP_SILK_EXT)"
 BOT_SOLDER_EXT = gbs
 BOT_SOLDER_DSC = B_Mask
-BOT_SOLDER_GBR = "$(NAME)_$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT)"
+BOT_SOLDER_GBR = "$(PCBNAME)_$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT)"
 BOT_COPPER_EXT = gbl
 BOT_COPPER_DSC = B_Cu
-BOT_COPPER_GBR = "$(NAME)_$(BOT_COPPER_DSC).$(BOT_COPPER_EXT)"
+BOT_COPPER_GBR = "$(PCBNAME)_$(BOT_COPPER_DSC).$(BOT_COPPER_EXT)"
 BOT_SILK_EXT = gbo
 BOT_SILK_DSC = B_Silkscreen
-BOT_SILK_GBR = "$(NAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)"
+BOT_SILK_GBR = "$(PCBNAME)_$(BOT_SILK_DSC).$(BOT_SILK_EXT)"
 OUTLN_EXT = gm1
 OUTLN_DSC = Edge_Cuts
-OUTLN_GBR = "$(NAME)_$(OUTLN_DSC).$(OUTLN_EXT)"
+OUTLN_GBR = "$(PCBNAME)_$(OUTLN_DSC).$(OUTLN_EXT)"
 DRILL_EXT = DRL
-DRILL_PTH = "$(NAME)-PTH.$(DRILL_EXT)"
-DRILL_NPTH = "$(NAME)-NPTH.$(DRILL_EXT)"
+DRILL_PTH = "$(PCBNAME)-PTH.$(DRILL_EXT)"
+DRILL_NPTH = "$(PCBNAME)-NPTH.$(DRILL_EXT)"
 TOP_PASTE_EXT = gtp
 TOP_PASTE_DSC = F_Paste
-TOP_PASTE_GBR = "$(NAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT)"
+TOP_PASTE_GBR = "$(PCBNAME)_$(TOP_PASTE_DSC).$(TOP_PASTE_EXT)"
 BOT_PASTE_EXT = gbp
 BOT_PASTE_DSC = B_Paste
-BOT_PASTE_GBR = "$(NAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT)"
+BOT_PASTE_GBR = "$(PCBNAME)_$(BOT_PASTE_DSC).$(BOT_PASTE_EXT)"
 
 GND1_EXT = g2
 GND1_DSC = In1_Cu
-GND1_GBR = "$(NAME)_$(GND1_DSC).$(GND1_EXT)"
+GND1_GBR = "$(PCBNAME)_$(GND1_DSC).$(GND1_EXT)"
 GND2_EXT = g3
 GND2_DSC = In2_Cu
-GND2_GBR = "$(NAME)_$(GND2_DSC).$(GND2_EXT)"
+GND2_GBR = "$(PCBNAME)_$(GND2_DSC).$(GND2_EXT)"
 
 ifeq ($(SMT),yes)
 PASTE_LAYERS= $(TOP_PASTE_GBR) $(BOT_PASTE_GBR)
@@ -106,16 +105,17 @@ endif
 
 DRILDIR = outputs
 GERBDIR = outputs
-FAB_TOP = $(NAME)-render-top-view.jpg
-FAB_BOTTOM = $(NAME)-render-bottom-view.jpg
+FAB_TOP = $(PCBNAME)-render-top-view.jpg
+FAB_BOTTOM = $(PCBNAME)-render-bottom-view.jpg
 FAB_FILES = $(FAB_TOP) $(FAB_BOTTOM)
 FAB_DUMMIES = $(FAB_TOP)_ $(FAB_BOTTOM)_
 
 DUMMY_TARGETS = $(FAB_DUMMIES)
 
-ZIPFILE = ../$(NAME)-pcbfab.zip
+ZIPFILE = ../$(PCBNAME)-pcbfab.zip
 
 define FAB_TOP_MSG
+|------------------------------------------------------------------------\
 |The assembly rendering \"$(FAB_TOP)\"\
 |must be manually generated with the following steps:|\
 |1) Bring up the 3D rendering from PCBNEW \(ALT-3\).|\
@@ -128,6 +128,7 @@ define FAB_TOP_MSG
 endef
 
 define FAB_BOTTOM_MSG
+|------------------------------------------------------------------------\
 |The assembly rendering \"$(FAB_BOTTOM)\"\
 |must be manually generated with the following steps:|\
 |1) Bring up the 3D rendering from PCBNEW \(ALT-3\).|\
@@ -140,7 +141,7 @@ define FAB_BOTTOM_MSG
 endef
 
 define README_TEXT
-"$(BARENAME)  \($(PROJECT_DESC)\)"\
+"$(NAME) Rev $(BOARDREV) \($(PROJECT_DESC)\)"\
 |------------------------------------------------------------------------------------|\
 ||:Board: "$(BASENAME)"\
 ||Service\
@@ -238,7 +239,8 @@ renderfiles: renderfile_top renderfile_bottom
 renderfile_top:
 	@if [ ! -f "$(FAB_TOP)" ]; then\
 		echo; \
-		echo "$(FAB_TOP_MSG)"|tr '|' '\n'; \
+		echo "XXX Didn't find top assembly rendering: $(FAB_TOP). See makefile.log"; \
+		echo "|$(FAB_TOP_MSG)|"|tr '|' '\n' >> makefile.log; \
 		echo; \
 	else \
 		echo "--> Found top assembly rendering: $(FAB_TOP)"; \
@@ -248,7 +250,8 @@ renderfile_top:
 renderfile_bottom:
 	@if [ ! -f "$(FAB_BOTTOM)" ]; then\
 		echo; \
-		echo "$(FAB_TOP_MSG)"|tr '|' '\n'; \
+		echo "XXX Didnt' find assembly rendering $(FAB_BOTTOM).  See makefile.log";\
+		echo "|$(FAB_TOP_MSG)|"|tr '|' '\n' >> makefile.log; \
 		echo; \
 	else \
 		echo "--> Found bottom assembly rendering: $(FAB_BOTTOM)"; \
@@ -258,9 +261,10 @@ renderfiles: renderfile_top renderfile_bottom
 
 clean:
 	rm -f $(OUTPUT_EXTS) *rst *pdf *.zip $(DUMMY_TARGETS) *_
+	rm -f makefile.log
 
 veryclean:
-	rm -rfv outputs $(NAME)* $(BARENAME)*
+	rm -rfv outputs $(PCBNAME)* $(NAME)*
 	rm -rfv *.jpg *.JPG *.pdf *.pdf *.png *.PNG
 	rm -f README* *rst *pdf *dvi
 
@@ -272,26 +276,26 @@ dummies:
 
 
 gvp: gvp_template.gvp
-	sed -e "s/@@NAME@@/$(NAME)/" < $< > $(NAME).gvp
+	sed -e "s/@@NAME@@/$(PCBNAME)/" < $< > $(PCBNAME).gvp
 
 copy:
-	cp $(DRILDIR)/$(BARENAME)-PTH.$(DRILL_EXT) $(DRILL_PTH) || echo "$(DRILL_FAIL)"|tr '|' '\n'
-	cp $(DRILDIR)/$(BARENAME)-NPTH.$(DRILL_EXT) $(DRILL_NPTH) || echo "$(DRILL_FAIL)"|tr '|' '\n'
-	cp $(GERBDIR)/$(BARENAME)-$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) $(TOP_SOLDER_GBR) || echo "$(GBR_FAIL)" | tr '|' '\n'
-	cp $(GERBDIR)/$(BARENAME)-$(TOP_COPPER_DSC).$(TOP_COPPER_EXT) ./$(TOP_COPPER_GBR)
-	cp $(GERBDIR)/$(BARENAME)-$(TOP_SILK_DSC).$(TOP_SILK_EXT) ./$(TOP_SILK_GBR)
-	cp $(GERBDIR)/$(BARENAME)-$(BOT_SILK_DSC).$(BOT_SILK_EXT) ./$(BOT_SILK_GBR)
-	cp $(GERBDIR)/$(BARENAME)-$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT) ./$(BOT_SOLDER_GBR)
-	cp $(GERBDIR)/$(BARENAME)-$(BOT_COPPER_DSC).$(BOT_COPPER_EXT) ./$(BOT_COPPER_GBR)
+	cp $(DRILDIR)/$(NAME)-PTH.$(DRILL_EXT) $(DRILL_PTH) || echo "$(DRILL_FAIL)"|tr '|' '\n'
+	cp $(DRILDIR)/$(NAME)-NPTH.$(DRILL_EXT) $(DRILL_NPTH) || echo "$(DRILL_FAIL)"|tr '|' '\n'
+	cp $(GERBDIR)/$(NAME)-$(TOP_SOLDER_DSC).$(TOP_SOLDER_EXT) $(TOP_SOLDER_GBR) || echo "$(GBR_FAIL)" | tr '|' '\n'
+	cp $(GERBDIR)/$(NAME)-$(TOP_COPPER_DSC).$(TOP_COPPER_EXT) ./$(TOP_COPPER_GBR)
+	cp $(GERBDIR)/$(NAME)-$(TOP_SILK_DSC).$(TOP_SILK_EXT) ./$(TOP_SILK_GBR)
+	cp $(GERBDIR)/$(NAME)-$(BOT_SILK_DSC).$(BOT_SILK_EXT) ./$(BOT_SILK_GBR)
+	cp $(GERBDIR)/$(NAME)-$(BOT_SOLDER_DSC).$(BOT_SOLDER_EXT) ./$(BOT_SOLDER_GBR)
+	cp $(GERBDIR)/$(NAME)-$(BOT_COPPER_DSC).$(BOT_COPPER_EXT) ./$(BOT_COPPER_GBR)
 ifeq ($(SMT),yes)
-	cp $(GERBDIR)/$(BARENAME)-$(TOP_PASTE_DSC).$(TOP_PASTE_EXT) ./$(TOP_PASTE_GBR)
-	cp $(GERBDIR)/$(BARENAME)-$(BOT_PASTE_DSC).$(BOT_PASTE_EXT) ./$(BOT_PASTE_GBR)
+	cp $(GERBDIR)/$(NAME)-$(TOP_PASTE_DSC).$(TOP_PASTE_EXT) ./$(TOP_PASTE_GBR)
+	cp $(GERBDIR)/$(NAME)-$(BOT_PASTE_DSC).$(BOT_PASTE_EXT) ./$(BOT_PASTE_GBR)
 endif
 ifeq ($(LAYERS),4)
-	cp $(GERBDIR)/$(BARENAME)-$(GND1_DSC).$(GND1_EXT) ./$(GND1_GBR)
-	cp $(GERBDIR)/$(BARENAME)-$(GND2_DSC).$(GND2_EXT) ./$(GND2_GBR)
+	cp $(GERBDIR)/$(NAME)-$(GND1_DSC).$(GND1_EXT) ./$(GND1_GBR)
+	cp $(GERBDIR)/$(NAME)-$(GND2_DSC).$(GND2_EXT) ./$(GND2_GBR)
 endif
-	cp $(GERBDIR)/$(BARENAME)-$(OUTLN_DSC).$(OUTLN_EXT) ./$(OUTLN_GBR)
+	cp $(GERBDIR)/$(NAME)-$(OUTLN_DSC).$(OUTLN_EXT) ./$(OUTLN_GBR)
 
 gerbv:
 	gerbv \

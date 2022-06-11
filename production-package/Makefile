@@ -1,24 +1,37 @@
 NAME=asteroids-adapter
-PROJECT_DESC="Asteroids PCB to Cabinet Adapter"
+PROJECT_DESC=Asteroids PCB to Cabinet Adapter
 VARIANTNAME=Production
 BOARDREV=4
 BOARDREVMINOR=
-SCHEMATIC_REV=0
+SCHEMATIC_REV=1
 PROJECT_REV=0
-PCBREV=0$(BOARDREV)
-SCHREV=$(BOARDREV).$(SCHEMATIC_REV)
-PRJREV=$(BOARDREV).$(SCHEMATIC_REV).$(PROJECT_REV)
-PCBNAME=$(NAME)-Rev_$(PCBREV)$(BOARDREVMINOR)
-SCHNAME=$(NAME)-Rev_$(SCHREV)
-PRJNAME=$(NAME)-Rev_$(PRJREV)$(BOARDREVMINOR)
 LAYERS=2
 
 PCBDIR="./PCB_dir"
+
+PROGRAMMING_DIR=programming_files_dir
+DIAGRAMS_DIR=diagrams_dir
+WORK_INSTR_DIR=work_instructions_dir
+LABELS_DIR=labels_dir
+
+SUBDIRS=$(PROGRAMMING_DIR) $(DIAGRAMS_DIR) $(WORK_INSTR_DIR) $(LABELS_DIR)
+
+PCBREV=$(BOARDREV)
+SCHREV=$(BOARDREV).$(SCHEMATIC_REV)
+PRJREV=$(BOARDREV).$(SCHEMATIC_REV).$(PROJECT_REV)
+PCBNAME=$(NAME)-Rev_$(PCBREV)$(BOARDREVMINOR)
+SCHNAME=$(NAME)-Rev_$(SCHREV)-$(VARIANTNAME)
+PRJNAME=$(NAME)-Rev_$(PRJREV)$(BOARDREVMINOR)-$(VARIANTNAME)
+
+SCHEMATIC_SRC=$(NAME).kicad_sch
+BOARD_SRC=$(NAME).kicad_pcb
+
 PCBZIPFILE=$(PCBNAME)-pcbfab.zip
 PKGZIPFILE=$(PRJNAME)-package.zip
 GENERATED_BOMFILE = ../$(NAME)_bom_$(SCHREV).csv
-BOMFILE=BOM-$(PRJNAME)-$(VARIANTNAME).csv
-
+BOMFILE=BOM-$(SCHNAME).csv
+BOMINITFILE=../bom.ini
+BOMINITTEMPLATE=./templates/bom.ini
 #README_STYLE=rst
 README_STYLE=pdf
 
@@ -27,21 +40,25 @@ READMEFILETXT=$(READMEFILEBASE).rst
 READMEFILEPDF=$(READMEFILEBASE).pdf
 READMETARGET=readme$(README_STYLE)
 
-RENDERFILE_TOP=Renderings-top-$(PRJNAME)-$(VARIANTNAME).jpg
-RENDERFILE_BOTTOM=Renderings-bottom-$(PRJNAME)-$(VARIANTNAME).jpg
+RENDERFILE_TOP=Renderings-top-$(PRJNAME).jpg
+RENDERFILE_BOTTOM=Renderings-bottom-$(PRJNAME).jpg
 RENDERFILES=$(RENDERFILE_TOP) $(RENDERFILE_BOTTOM)
 DUMMY_RENDERFILES=$(addsuffix _, $(RENDERFILES))
 GENERATED_SCHEMFILE=../$(NAME).pdf
-SCHEMFILE=Schematic-$(PRJNAME)-$(VARIANTNAME).pdf
+SCHEMFILE=Schematic-$(PRJNAME).pdf
 STEPFILE=Model-3D-$(PCBNAME)-$(VARIANTNAME).STEP
 DUMMY_STEPFILE="$(STEPFILE)_"
 DUMMY_TARGETS=$(DUMMY_STEPFILE) $(DUMMY_RENDERFILES)
-README_RENDERFILE=current_top_rendering.jpg
 
+define MAKEFILE_SWITCHES
+NAME="$(NAME)" PROJECT_DESC="$(PROJECT_DESC)" \
+BOARDREV="$(BOARDREV)" BOARDREVMINOR="$(BOARDREVMINOR)" \
+LAYERS="$(LAYERS)"
+endef
 
 define README_TEXT
-"$(NAME) \($(PROJECT_DESC)\)"\
-|-----------------------------------------------------------------------------------|\
+"$(NAME) Rev $(PRJREV) \($(PROJECT_DESC)\)"\
+|------------------------------------------------------------------------------------|\
 |This is the package for $(NAME) rev $(PRJREV).|\
 |Service Requested\
 |=================|\
@@ -113,11 +130,12 @@ define README_TEXT
 |.. figure:: ./$(RENDERFILE_TOP)|\
 |   TOP side rendering of populated PCB\
 |.. figure:: ./$(RENDERFILE_BOTTOM)|\
-|   TOP side rendering of populated PCB
+|   BOTTOM side rendering of populated PCB
 endef
 
 
 define RENDER_TOP_MSG
+|------------------------------------------------------------------------\
 |The assembly rendering \"$(RENDERFILE_TOP)\"\
 |must be manually generated with the following steps:|\
 |1) Bring up the 3D rendering from PCBNEW \(ALT-3\).  Select\
@@ -128,11 +146,8 @@ define RENDER_TOP_MSG
 |and delete the trailing \"_\".  Then click Save.
 endef
 
-define README_RENDERFILE_LINK
-|.. image:: production-package/$(RENDERFILE_TOP)|
-endef
-
 define RENDER_BOTTOM_MSG
+|------------------------------------------------------------------------\
 |The assembly rendering \"$(RENDERFILE_BOTTOM)\"\
 |must be manually generated with the following steps:|\
 |1) Bring up the 3D rendering from PCBNEW \(ALT-3\).  Select\
@@ -144,6 +159,7 @@ define RENDER_BOTTOM_MSG
 endef
 
 define BOM_MSG
+|------------------------------------------------------------------------\
 |The BOM file must be manually generated.  The BOM file requires the KiBOM plugin.\
 |Please ensure that KiBOM is installed.  To generate the BOM file:\
 |1) Copy the file 'bom.ini' in the templates directory to the main directory:\
@@ -153,6 +169,7 @@ define BOM_MSG
 endef
 
 define SCHEM_MSG
+|------------------------------------------------------------------------\
 |The Schematic PDF file must be manually generated:\
 |1) In EESChema, select File->Plot to bring up the Plot dialog\
 |2) Select PDF output format.\
@@ -161,12 +178,13 @@ define SCHEM_MSG
 endef
 
 define STEPFILE_MSG
+|------------------------------------------------------------------------\
 |The STEP file must be manually generated.\
 |1) From PCBNEW, select File->Export->STEP\
-|2) Check the following boxes:
-|   - Board Center Origin
-|   - Substitute similarly named models
-|   - Overwrite old file
+|2) Check the following boxes:\
+|   - Board Center Origin\
+|   - Substitute similarly named models\
+|   - Overwrite old file\
 |2) Save to the production package directory.  Select the placeholder filename:\
 |"    $(STEPFILE)_"\
 |3) Remove the trailing \"_\" and click "Save"
@@ -177,7 +195,7 @@ endef
 # exported manually. the "dummies" target creates filename templates that can be
 # selected and edited (by removing the trailing "_") to help ensure that the
 
-all: dummies bomfile renderfiles schemfile $(READMETARGET) pkgzip
+all: dummies bomfile renderfiles schemfile $(READMETARGET) pkgzip subdirs
 
 .phony: dummies
 dummies:
@@ -186,19 +204,27 @@ dummies:
 
 .Phony: clean
 clean:
-	rm -fv  *.zip  $(DUMMY_TARGETS) *~ *_
-	(cd PCB_dir; make clean)
+	rm -fv  *.zip  $(DUMMY_TARGETS) *~ *_ makefile.log
+	rm -fv  *pdf *rst *csv
+
+	(cd PCB_dir; make $(MAKEFILE_SWITCHES) clean)
 
 .phony: veryclean
 veryclean: clean
 	rm -fv $(SCHEMFILE) $(RENDERFILES) $(BOMFILE)
 	rm -rfv *.jpg *.JPG *.pdf *.pdf *.png *.PNG
 	rm -f README* *rst *pdf *dvi
-	(cd PCB_dir; make veryclean)
+	(cd PCB_dir; make $(MAKEFILE_SWITCHES) veryclean)
+
+bominit: $(BOMINITFILE)
+
+$(BOMINITFILE): $(BOMINITTEMPLATE)
+	cp -i $(BOMINITTEMPLATE) $(BOMINITFILE)
 
 $(BOMFILE):
 	@if [ ! -f "$(GENERATED_BOMFILE)" ]; then \
-		echo "$(BOM_MSG)"|tr '|' '\n';\
+		echo "XXX Didn't find BOM: $(GENERATED_BOMFILE).  See makefile.log. . .";\
+		echo "|$(BOM_MSG)|"|tr '|' '\n' >> makefile.log;\
 	else \
 		echo "--> Found BOM: $(GENERATED_BOMFILE).  Copying. . .";\
 		cp $(GENERATED_BOMFILE) $(BOMFILE);\
@@ -206,15 +232,10 @@ $(BOMFILE):
 
 bomfile: $(BOMFILE)
 
-$(README_RENDERFILE): $(RENDERFILE_TOP)
-	@echo "Copying rendered image for README."
-	@cp $(RENDERFILE) "$(README_RENDERFILE_LINK)"|tr '|' '\n' > $@
-
-readme_link: $(README_RENDERFILE_INCLUDE)
-
 $(SCHEMFILE):
 	@if [ ! -f "$(GENERATED_SCHEMFILE)" ]; then \
-		echo "$(SCHEM_MSG)"|tr '|' '\n'; \
+		echo "XXX Didn't find Schematic PDF: $(GENERATED_SCHEMFILE). See makefile.log";\
+		echo "$(SCHEM_MSG)"|tr '|' '\n'  >> makefile.log; \
 	else \
 		echo "--> Found Schematic PDF: $(GENERATED_SCHEMFILE)";\
 		cp $(GENERATED_SCHEMFILE) $(SCHEMFILE);\
@@ -225,43 +246,45 @@ schemfile: $(SCHEMFILE)
 $(STEPFILE):
 	@if [ ! -f "$(STEPFILE)" ]; then\
 		echo; \
-		echo "$(STEPFILE_MSG)"|tr '|' '\n'; \
+		echo "XXX Didn't find assembly STEP file: $(STEPFILE). See makefile.log"; \
+		echo "$(STEPFILE_MSG)"|tr '|' '\n' >> makefile.log; \
 		echo; \
 	else \
 		echo "--> Found assembly STEP file: $(STEPFILE)"; \
 	fi
 
-
 .Phony: stepfile
 stepfile: $(STEPFILE)
 
 .Phony: renderfiles
-renderfiles: renderfile_top renderfile_bottom readme_link
+renderfiles: renderfile_top renderfile_bottom
 
 .Phony: renderfile_top
 renderfile_top:
 	@if [ ! -f "$(RENDERFILE_TOP)" ]; then\
 		echo; \
-		echo "$(RENDER_BOTTOM_MSG)"|tr '|' '\n'; \
+		echo "XXX Didn't find assembly rendering: $(RENDERFILE_TOP) See makefile.log"; \
+		echo "$(RENDER_BOTTOM_MSG)"|tr '|' '\n' >> makefile.log; \
 		echo; \
 	else \
 		echo "--> Found top assembly rendering: $(RENDERFILE_TOP)"; \
-		echo "    Creating copy for README to include.";\
-		cp $(RENDERFILE_TOP) $(README_RENDERFILE); \
 	fi
 
 .Phony: renderfile_bottom
 renderfile_bottom:
 	@if [ ! -f "$(RENDERFILE_BOTTOM)" ]; then\
 		echo; \
-		echo "$(RENDER_TOP_MSG)"|tr '|' '\n'; \
+		echo "XXX Didn't find bottom assembly rendering: $(RENDERFILE_BOTTOM) See makefile.log"; \
+		echo "$(RENDER_TOP_MSG)"|tr '|' '\n' >> makefile.log; \
 		echo; \
 	else \
 		echo "--> Found bottom assembly rendering: $(RENDERFILE_BOTTOM)"; \
 	fi
 
+pcbzip: $(PCBZIPFILE)
+
 $(PCBZIPFILE):
-	echo "Building PCB Zip file..."; (cd $(PCBDIR); make zip)
+	echo "Building PCB Zip file..."; (cd $(PCBDIR); make $(MAKEFILE_SWITCHES) zip)
 
 renderfiles: renderfile_top renderfile_bottom
 
@@ -277,8 +300,10 @@ $(READMEFILEPDF): $(READMEFILETXT)
 	@echo "Creating Readme File $(READMEFILEPDF)."; \
 	pandoc -f rst -t pdf -o "$(READMEFILEPDF)" "$(READMEFILETXT)";
 
+.phony subdirs:
+	@mkdir -p $(SUBDIRS)
 
-pkgzip: $(PCBZIPFILE) $(BOMFILE) $(RENDERFILES) $(READMEFILE)
+pkgzip: $(PCBZIPFILE) $(BOMFILE) $(RENDERFILES) $(READMEFILE) $(STEPFILE)
 	@echo removing old zip. . .; \
 	rm -rf $(PKGZIPFILE); \
 	echo creating zip. . .; \
@@ -290,7 +315,4 @@ pkgzip: $(PCBZIPFILE) $(BOMFILE) $(RENDERFILES) $(READMEFILE)
 	$(RENDERFILES) \
 	$(BOMFILE) \
 	$(STEPFILE) \
-	programming_files_dir \
-	diagrams_dir \
-	work_instructions_dir \
-	labels_dir
+	$(SUBDIRS)
